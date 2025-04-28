@@ -7,43 +7,32 @@ import java.util.List;
 @Entity(name = "estudiantes")
 public class Estudiante extends Persona {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @ManyToOne
-    @JoinColumn(name = "programa_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "programa_id", nullable = false)
     private ProgramaAcademico programa;
 
-    @Column(name = "codigo_institucional")
+    @Column(name = "codigo_institucional", nullable = false)
     private String codigoInstitucional;
 
-    @OneToMany(mappedBy = "estudiante")
+    @OneToMany(mappedBy = "estudiante", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Poligrafo> poligrafos;
 
-    @Column(name = "correo_institucional")
+    @Column(name = "correo_institucional", nullable = false)
     private String correoInstitucional;
 
     public Estudiante() {
     }
 
-    public Estudiante(long id, String nombre, String telefono, String correoPersonal, LocalDate fechaNacimiento, String numeroDocumento, boolean estado,  long id1, ProgramaAcademico programa, String codigoInstitucional, String correoInstitucional) {
-        super();
-        this.id = id1;
+    public Estudiante(String nombre, String telefono, String correoPersonal, LocalDate fechaNacimiento,
+                      String numeroDocumento, boolean estado, TipoDocumento tipoDocumento, TipoGenero genero,
+                      ProgramaAcademico programa, String codigoInstitucional, String correoInstitucional) {
+        super(0L,nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
         this.programa = programa;
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;
     }
 
-    @Override
-    public long getId() {
-        return id;
-    }
 
-    @Override
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public ProgramaAcademico getPrograma() {
         return programa;
