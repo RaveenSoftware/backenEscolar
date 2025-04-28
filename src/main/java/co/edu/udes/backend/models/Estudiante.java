@@ -2,6 +2,7 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "estudiantes")
 public class Estudiante extends Persona {
