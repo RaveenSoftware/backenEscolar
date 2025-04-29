@@ -7,41 +7,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@CrossOrigin(origins = {"*"})
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/asistencias")
+@CrossOrigin(origins = "*")
 public class AsistenciaController {
 
+    private final AsistenciaRepository asistenciaRepository;
+
     @Autowired
-    private AsistenciaRepository asistenciaRepository;
+    public AsistenciaController(AsistenciaRepository asistenciaRepository) {
+        this.asistenciaRepository = asistenciaRepository;
+    }
 
     // Obtener todas las asistencias
-    @GetMapping("/asistencias")
-    public List<Asistencia> getAllAsistencias() {
-        return asistenciaRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Asistencia>> getAllAsistencias() {
+        List<Asistencia> asistencias = asistenciaRepository.findAll();
+        return ResponseEntity.ok(asistencias);
     }
 
     // Crear una nueva asistencia
-    @PostMapping("/asistencias")
-    public Asistencia createAsistencia(@RequestBody Asistencia asistencia) {
-        return asistenciaRepository.save(asistencia);
+    @PostMapping
+    public ResponseEntity<Asistencia> createAsistencia(@RequestBody Asistencia asistencia) {
+        Asistencia savedAsistencia = asistenciaRepository.save(asistencia);
+        return ResponseEntity.ok(savedAsistencia);
     }
 
     // Obtener asistencia por ID
-    @GetMapping("/asistencias/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Asistencia> getAsistenciaById(@PathVariable Long id) {
         Asistencia asistencia = asistenciaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con ID: " + id));
         return ResponseEntity.ok(asistencia);
     }
 
-    // Actualizar asistencia
-    @PutMapping("/asistencias/{id}")
+    // Actualizar asistencia existente
+    @PutMapping("/{id}")
     public ResponseEntity<Asistencia> updateAsistencia(@PathVariable Long id, @RequestBody Asistencia asistenciaDetails) {
         Asistencia asistencia = asistenciaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con ID: " + id));
 
         asistencia.setEstudiante(asistenciaDetails.getEstudiante());
         asistencia.setCurso(asistenciaDetails.getCurso());
@@ -53,10 +61,10 @@ public class AsistenciaController {
     }
 
     // Eliminar asistencia
-    @DeleteMapping("/asistencias/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAsistencia(@PathVariable Long id) {
         Asistencia asistencia = asistenciaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asistencia no encontrada con ID: " + id));
 
         asistenciaRepository.delete(asistencia);
         Map<String, Boolean> response = new HashMap<>();

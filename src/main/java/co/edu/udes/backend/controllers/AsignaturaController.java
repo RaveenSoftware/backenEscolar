@@ -11,41 +11,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = "http://localhost")
 @RestController
-@CrossOrigin(origins = {"*"})
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/asignaturas")
+@CrossOrigin(origins = "*")
 public class AsignaturaController {
 
+    private final AsignaturaRepository asignaturaRepository;
+
     @Autowired
-    private AsignaturaRepository asignaturaRepository;
-
-    // get all asignaturas
-    @GetMapping("/asignaturas")
-    public List<Asignatura> getAllAsignaturas(){
-        return asignaturaRepository.findAll();
+    public AsignaturaController(AsignaturaRepository asignaturaRepository) {
+        this.asignaturaRepository = asignaturaRepository;
     }
 
-    // create asignatura rest api
-    @PostMapping("/asignaturas")
-    public Asignatura createAsignatura(@RequestBody Asignatura asignatura) {
-        return asignaturaRepository.save(asignatura);
+    // Obtener todas las asignaturas
+    @GetMapping
+    public ResponseEntity<List<Asignatura>> getAllAsignaturas() {
+        List<Asignatura> asignaturas = asignaturaRepository.findAll();
+        return ResponseEntity.ok(asignaturas);
     }
 
-    // get asignatura by id rest api
-    @GetMapping("/asignaturas/{id}")
+    // Crear una nueva asignatura
+    @PostMapping
+    public ResponseEntity<Asignatura> createAsignatura(@RequestBody Asignatura asignatura) {
+        Asignatura savedAsignatura = asignaturaRepository.save(asignatura);
+        return ResponseEntity.ok(savedAsignatura);
+    }
+
+    // Obtener asignatura por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Asignatura> getAsignaturaById(@PathVariable Long id) {
         Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
         return ResponseEntity.ok(asignatura);
     }
 
-    // update asignatura rest api
-
-    @PutMapping("/asignaturas/{id}")
-    public ResponseEntity<Asignatura> updateAsignatura(@PathVariable Long id, @RequestBody Asignatura asignaturaDetails){
+    // Actualizar asignatura existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Asignatura> updateAsignatura(@PathVariable Long id, @RequestBody Asignatura asignaturaDetails) {
         Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
 
         asignatura.setCodigo(asignaturaDetails.getCodigo());
         asignatura.setNombre(asignaturaDetails.getNombre());
@@ -53,16 +57,15 @@ public class AsignaturaController {
         asignatura.setNumeroSemestre(asignaturaDetails.getNumeroSemestre());
         asignatura.setNumeroCreditos(asignaturaDetails.getNumeroCreditos());
 
-
         Asignatura updatedAsignatura = asignaturaRepository.save(asignatura);
         return ResponseEntity.ok(updatedAsignatura);
     }
 
-    // delete asignatura rest api
-    @DeleteMapping("/asignaturas/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteAsignatura(@PathVariable Long id){
+    // Eliminar asignatura
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Boolean>> deleteAsignatura(@PathVariable Long id) {
         Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
 
         asignaturaRepository.delete(asignatura);
         Map<String, Boolean> response = new HashMap<>();

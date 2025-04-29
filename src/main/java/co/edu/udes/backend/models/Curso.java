@@ -1,7 +1,6 @@
 package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity(name = "cursos")
@@ -11,44 +10,47 @@ public class Curso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "docente_id")
-    private Docente docente;
-
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "grupo")
+    @Column(name = "grupo", nullable = false)
     private String grupo;
 
-    @ManyToOne
-    @JoinColumn(name = "asignatura_id,")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "docente_id", nullable = false)
+    private Docente docente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asignatura_id", nullable = false)
     private Asignatura asignatura;
 
-//    @OneToMany(mappedBy = "curso")
-//    private List<AulaHorario> aulaHorarios;
-
-    @ManyToOne
-    @JoinColumn(name = "semestre_academico_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "semestre_academico_id", nullable = false)
     private SemestreAcademico semestreAcademico;
 
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "programa_academico_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "programa_academico_id", nullable = false)
     private ProgramaAcademico programaAcademico;
 
     @ManyToMany
+    @JoinTable(
+            name = "cursos_matriculas",
+            joinColumns = @JoinColumn(name = "curso_id"),
+            inverseJoinColumns = @JoinColumn(name = "matricula_id")
+    )
     private List<MatriculaAcademica> matriculaAcademica;
 
     public Curso() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Curso(long id, Docente docente, String nombre, String grupo, Asignatura asignatura, List<AulaHorario> aulaHorarios, SemestreAcademico semestreAcademico, ProgramaAcademico programaAcademico, List<MatriculaAcademica> matriculaAcademica) {
-        this.id = id;
-        this.docente = docente;
+    public Curso(String nombre, String grupo, Docente docente, Asignatura asignatura,
+                 SemestreAcademico semestreAcademico, ProgramaAcademico programaAcademico,
+                 List<MatriculaAcademica> matriculaAcademica) {
         this.nombre = nombre;
         this.grupo = grupo;
+        this.docente = docente;
         this.asignatura = asignatura;
-//        this.aulaHorarios = aulaHorarios;
         this.semestreAcademico = semestreAcademico;
         this.programaAcademico = programaAcademico;
         this.matriculaAcademica = matriculaAcademica;
@@ -78,6 +80,22 @@ public class Curso {
         this.grupo = grupo;
     }
 
+    public Docente getDocente() {
+        return docente;
+    }
+
+    public void setDocente(Docente docente) {
+        this.docente = docente;
+    }
+
+    public Asignatura getAsignatura() {
+        return asignatura;
+    }
+
+    public void setAsignatura(Asignatura asignatura) {
+        this.asignatura = asignatura;
+    }
+
     public SemestreAcademico getSemestreAcademico() {
         return semestreAcademico;
     }
@@ -93,30 +111,6 @@ public class Curso {
     public void setProgramaAcademico(ProgramaAcademico programaAcademico) {
         this.programaAcademico = programaAcademico;
     }
-
-    public Asignatura getAsignatura() {
-        return asignatura;
-    }
-
-    public void setAsignatura(Asignatura asignatura) {
-        this.asignatura = asignatura;
-    }
-
-    public Docente getDocente() {
-        return docente;
-    }
-
-    public void setDocente(Docente docente) {
-        this.docente = docente;
-    }
-
-//    public List<AulaHorario> getAulaHorarios() {
-//        return aulaHorarios;
-//    }
-
-//    public void setAulaHorarios(List<AulaHorario> aulaHorarios) {
-//        this.aulaHorarios = aulaHorarios;
-//    }
 
     public List<MatriculaAcademica> getMatriculaAcademica() {
         return matriculaAcademica;

@@ -1,62 +1,71 @@
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Calificaciones;
 import co.edu.udes.backend.models.Poligrafo;
-import co.edu.udes.backend.services.HistorialAcademicoService;
+import co.edu.udes.backend.repositories.PoligrafoRepository;
+import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 @RestController
-@CrossOrigin(origins = {"*"})
 @RequestMapping("/api/v1/historial")
+@CrossOrigin(origins = "*")
 public class HistorialAcademicoController {
 
     @Autowired
-    private HistorialAcademicoService historialService;
+    private PoligrafoRepository poligrafoRepository;
 
-    // Obtener todas las calificaciones de un estudiante
-    @GetMapping("/calificaciones/{idEstudiante}")
-    public ResponseEntity<List<Calificaciones>> getCalificaciones(@PathVariable Long idEstudiante) {
-        List<Calificaciones> calificaciones = historialService.obtenerCalificacionesPorEstudiante(idEstudiante);
-        return ResponseEntity.ok(calificaciones);
+    // Obtener todos los registros
+    @GetMapping("/poligrafos")
+    public List<Poligrafo> getAllPoligrafos() {
+        return poligrafoRepository.findAll();
     }
 
-    // Obtener todos los registros del poligrafo del estudiante
-    @GetMapping("/poligrafo/{idEstudiante}")
-    public ResponseEntity<List<Poligrafo>> getPoligrafo(@PathVariable Long idEstudiante) {
-        List<Poligrafo> poligrafos = historialService.obtenerResumenPoligrafo(idEstudiante);
-        return ResponseEntity.ok(poligrafos);
+    // Crear un nuevo registro
+    @PostMapping("/poligrafos")
+    public Poligrafo createPoligrafo(@RequestBody Poligrafo poligrafo) {
+        return poligrafoRepository.save(poligrafo);
     }
 
-    // Obtener promedio general
-    @GetMapping("/promedio/{idEstudiante}")
-    public ResponseEntity<Map<String, Double>> getPromedio(@PathVariable Long idEstudiante) {
-        double promedio = historialService.calcularPromedioGeneral(idEstudiante);
-        Map<String, Double> response = new HashMap<>();
-        response.put("promedio", promedio);
-        return ResponseEntity.ok(response);
+    // Obtener por ID
+    @GetMapping("/poligrafos/{id}")
+    public ResponseEntity<Poligrafo> getPoligrafoById(@PathVariable Long id) {
+        Poligrafo poligrafo = poligrafoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no encontrado con ID: " + id));
+        return ResponseEntity.ok(poligrafo);
     }
 
-    // Obtener número de asignaturas aprobadas
-    @GetMapping("/aprobadas/{idEstudiante}")
-    public ResponseEntity<Map<String, Long>> getAprobadas(@PathVariable Long idEstudiante) {
-        long aprobadas = historialService.contarAprobadas(idEstudiante);
-        Map<String, Long> response = new HashMap<>();
-        response.put("aprobadas", aprobadas);
-        return ResponseEntity.ok(response);
+    // Actualizar registro
+    @PutMapping("/poligrafos/{id}")
+    public ResponseEntity<Poligrafo> updatePoligrafo(@PathVariable Long id, @RequestBody Poligrafo details) {
+        Poligrafo poligrafo = poligrafoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no encontrado con ID: " + id));
+
+        poligrafo.setEstudiante(details.getEstudiante());
+        poligrafo.setAsignatura(details.getAsignatura());
+        poligrafo.setCalificaciones(details.getCalificaciones());
+        poligrafo.setFechaEmision(details.getFechaEmision());
+        poligrafo.setSemestreAcademico(details.getSemestreAcademico());
+        poligrafo.setCreditosMatriculados(details.getCreditosMatriculados());
+        poligrafo.setPromedio(details.getPromedio());
+        poligrafo.setCreditosAcumulados(details.getCreditosAcumulados());
+        poligrafo.setPromedioAcumulado(details.getPromedioAcumulado());
+
+        Poligrafo updated = poligrafoRepository.save(poligrafo);
+        return ResponseEntity.ok(updated);
     }
 
-    // Obtener número de asignaturas reprobadas
-    @GetMapping("/reprobadas/{idEstudiante}")
-    public ResponseEntity<Map<String, Long>> getReprobadas(@PathVariable Long idEstudiante) {
-        long reprobadas = historialService.contarReprobadas(idEstudiante);
-        Map<String, Long> response = new HashMap<>();
-        response.put("reprobadas", reprobadas);
+    // Eliminar registro
+    @DeleteMapping("/poligrafos/{id}")
+    public ResponseEntity<Map<String, Boolean>> deletePoligrafo(@PathVariable Long id) {
+        Poligrafo poligrafo = poligrafoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no encontrado con ID: " + id));
+
+        poligrafoRepository.delete(poligrafo);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", true);
         return ResponseEntity.ok(response);
     }
 }
