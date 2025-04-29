@@ -1,46 +1,31 @@
 package co.edu.udes.backend.models;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+import jakarta.persistence.*;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity(
-        name = "tipos_documentos"
-)
+@Entity(name = "tipos_documentos")
 public class TipoDocumento {
+
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(
-            name = "nombre"
-    )
+
+    @Column(name = "nombre", nullable = false, unique = true)
     private String nombre;
-    @Column(
-            name = "estado"
-    )
+
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
     public TipoDocumento() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public TipoDocumento(long id, String nombre, boolean estado) {
-        this.id = id;
+    public TipoDocumento(String nombre, boolean estado) {
         this.nombre = nombre;
         this.estado = estado;
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(long id) {
@@ -48,7 +33,7 @@ public class TipoDocumento {
     }
 
     public String getNombre() {
-        return this.nombre;
+        return nombre;
     }
 
     public void setNombre(String nombre) {
@@ -56,11 +41,10 @@ public class TipoDocumento {
     }
 
     public boolean isEstado() {
-        return this.estado;
+        return estado;
     }
 
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
 }
-

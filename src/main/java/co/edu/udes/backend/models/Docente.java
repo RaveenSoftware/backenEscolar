@@ -1,62 +1,42 @@
 package co.edu.udes.backend.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity(
-        name = "docentes"
-)
+@Entity(name = "docentes")
 public class Docente extends Persona {
-    @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
-    private long id;
-    @ManyToOne
-    @JoinColumn(
-            name = "facultad_id"
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "facultad_id", nullable = false)
     private Facultad facultad;
-    @Column(
-            name = "especialidad"
-    )
+
+    @Column(name = "especialidad", nullable = false)
     private String especialidad;
-    @Column(
-            name = "codigo_institucional"
-    )
+
+    @Column(name = "codigo_institucional", nullable = false, unique = true)
     private String codigoInstitucional;
-    @Column(
-            name = "correo_institucional"
-    )
+
+    @Column(name = "correo_institucional", nullable = false, unique = true)
     private String correoInstitucional;
 
     public Docente() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Docente(long id, String nombre, String telefono, String correoPersonal, LocalDate fechaNacimiento, String numeroDocumento, boolean estado, TipoDocumento tipoDocumento, TipoGenero genero, long id1, Facultad facultad, String especialidad, String codigoInstitucional, String correoInstitucional) {
-        this.id = id1;
+    public Docente(String nombre, String telefono, String correoPersonal,
+                   LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
+                   TipoDocumento tipoDocumento, TipoGenero genero,
+                   Facultad facultad, String especialidad,
+                   String codigoInstitucional, String correoInstitucional) {
+        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
         this.facultad = facultad;
         this.especialidad = especialidad;
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;
     }
 
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public Facultad getFacultad() {
-        return this.facultad;
+        return facultad;
     }
 
     public void setFacultad(Facultad facultad) {
@@ -64,7 +44,7 @@ public class Docente extends Persona {
     }
 
     public String getEspecialidad() {
-        return this.especialidad;
+        return especialidad;
     }
 
     public void setEspecialidad(String especialidad) {
@@ -72,7 +52,7 @@ public class Docente extends Persona {
     }
 
     public String getCodigoInstitucional() {
-        return this.codigoInstitucional;
+        return codigoInstitucional;
     }
 
     public void setCodigoInstitucional(String codigoInstitucional) {
@@ -80,7 +60,7 @@ public class Docente extends Persona {
     }
 
     public String getCorreoInstitucional() {
-        return this.correoInstitucional;
+        return correoInstitucional;
     }
 
     public void setCorreoInstitucional(String correoInstitucional) {

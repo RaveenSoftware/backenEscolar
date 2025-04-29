@@ -11,47 +11,50 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = "http://localhost")
 @RestController
-@CrossOrigin(origins = {"*"})
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/cursos")
+@CrossOrigin(origins = "*")
 public class CursoController {
 
+    private final CursoRepository cursoRepository;
+
     @Autowired
-    private CursoRepository cursoRepository;
-
-    // get all cursos
-    @GetMapping("/cursos")
-    public List<Curso> getAllCursos(){
-        return cursoRepository.findAll();
+    public CursoController(CursoRepository cursoRepository) {
+        this.cursoRepository = cursoRepository;
     }
 
-    // create curso rest api
-    @PostMapping("/cursos")
-    public Curso createCurso(@RequestBody Curso curso) {
-        return cursoRepository.save(curso);
+    // Obtener todos los cursos
+    @GetMapping
+    public ResponseEntity<List<Curso>> getAllCursos() {
+        List<Curso> cursos = cursoRepository.findAll();
+        return ResponseEntity.ok(cursos);
     }
 
-    // get curso by id rest api
-    @GetMapping("/cursos/{id}")
+    // Crear un nuevo curso
+    @PostMapping
+    public ResponseEntity<Curso> createCurso(@RequestBody Curso curso) {
+        Curso savedCurso = cursoRepository.save(curso);
+        return ResponseEntity.ok(savedCurso);
+    }
+
+    // Obtener curso por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Curso> getCursoById(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
         return ResponseEntity.ok(curso);
     }
 
-    // update curso rest api
-
-    @PutMapping("/cursos/{id}")
-    public ResponseEntity<Curso> updateCurso(@PathVariable Long id, @RequestBody Curso cursoDetails){
+    // Actualizar curso existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Curso> updateCurso(@PathVariable Long id, @RequestBody Curso cursoDetails) {
         Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
 
         curso.setDocente(cursoDetails.getDocente());
         curso.setNombre(cursoDetails.getNombre());
         curso.setGrupo(cursoDetails.getGrupo());
         curso.setAsignatura(cursoDetails.getAsignatura());
-//        curso.setAulaHorarios(cursoDetails.getAulaHorarios());
         curso.setSemestreAcademico(cursoDetails.getSemestreAcademico());
         curso.setProgramaAcademico(cursoDetails.getProgramaAcademico());
         curso.setMatriculaAcademica(cursoDetails.getMatriculaAcademica());
@@ -60,11 +63,11 @@ public class CursoController {
         return ResponseEntity.ok(updatedCurso);
     }
 
-    // delete curso rest api
-    @DeleteMapping("/cursos/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteCurso(@PathVariable Long id){
+    // Eliminar curso
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Boolean>> deleteCurso(@PathVariable Long id) {
         Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
 
         cursoRepository.delete(curso);
         Map<String, Boolean> response = new HashMap<>();

@@ -1,74 +1,74 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 import co.edu.udes.backend.models.Pensum;
 import co.edu.udes.backend.repositories.PensumRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/pensums")
+@CrossOrigin(origins = "*")
 public class PensumController {
+
+    private final PensumRepository pensumRepository;
+
     @Autowired
-    private PensumRepository pensumRepository;
-
-    public PensumController() {
+    public PensumController(PensumRepository pensumRepository) {
+        this.pensumRepository = pensumRepository;
     }
 
-    @GetMapping({"/pensums"})
-    public List<Pensum> getAllPensums() {
-        return this.pensumRepository.findAll();
+    // Obtener todos los pensums
+    @GetMapping
+    public ResponseEntity<List<Pensum>> getAllPensums() {
+        List<Pensum> pensums = pensumRepository.findAll();
+        return ResponseEntity.ok(pensums);
     }
 
-    @PostMapping({"/pensums"})
-    public Pensum createPensum(@RequestBody Pensum pensum) {
-        return (Pensum)this.pensumRepository.save(pensum);
+    // Crear un nuevo pensum
+    @PostMapping
+    public ResponseEntity<Pensum> createPensum(@RequestBody Pensum pensum) {
+        Pensum saved = pensumRepository.save(pensum);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping({"/pensums/{id}"})
+    // Obtener pensum por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Pensum> getPensumById(@PathVariable Long id) {
-        Pensum pensum = (Pensum)this.pensumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pensum not exist with id :" + id));
+        Pensum pensum = pensumRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pensum no existe con ID: " + id));
         return ResponseEntity.ok(pensum);
     }
 
-    @PutMapping({"/pensums/{id}"})
+    // Actualizar un pensum existente
+    @PutMapping("/{id}")
     public ResponseEntity<Pensum> updatePensum(@PathVariable Long id, @RequestBody Pensum pensumDetails) {
-        Pensum pensum = (Pensum)this.pensumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pensum not exist with id :" + id));
+        Pensum pensum = pensumRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pensum no existe con ID: " + id));
+
         pensum.setCodigoPensum(pensumDetails.getCodigoPensum());
         pensum.setAsignaturas(pensumDetails.getAsignaturas());
         pensum.setProgramaAcademico(pensumDetails.getProgramaAcademico());
         pensum.setEstado(pensumDetails.isEstado());
-        Pensum updatedPensum = (Pensum)this.pensumRepository.save(pensum);
-        return ResponseEntity.ok(updatedPensum);
+
+        Pensum updated = pensumRepository.save(pensum);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping({"/pensums/{id}"})
+    // Eliminar pensum
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deletePensum(@PathVariable Long id) {
-        Pensum pensum = (Pensum)this.pensumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pensum not exist with id :" + id));
-        this.pensumRepository.delete(pensum);
-        Map<String, Boolean> response = new HashMap();
+        Pensum pensum = pensumRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pensum no existe con ID: " + id));
+
+        pensumRepository.delete(pensum);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

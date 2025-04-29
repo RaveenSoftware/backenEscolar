@@ -11,45 +11,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = "http://localhost")
 @RestController
-@CrossOrigin(origins = {"*"})
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/poligrafos")
+@CrossOrigin(origins = "*")
 public class PoligrafoController {
 
+    private final PoligrafoRepository poligrafoRepository;
+
     @Autowired
-    private PoligrafoRepository poligrafoRepository;
-
-    // get all poligrafos
-    @GetMapping("/poligrafos")
-    public List<Poligrafo> getAllPoligrafos(){
-        return poligrafoRepository.findAll();
+    public PoligrafoController(PoligrafoRepository poligrafoRepository) {
+        this.poligrafoRepository = poligrafoRepository;
     }
 
-    // create poligrafo rest api
-    @PostMapping("/poligrafos")
-    public Poligrafo createPoligrafo(@RequestBody Poligrafo poligrafo) {
-        return poligrafoRepository.save(poligrafo);
+    // Obtener todos los registros de polígrafos
+    @GetMapping
+    public ResponseEntity<List<Poligrafo>> getAllPoligrafos() {
+        List<Poligrafo> poligrafos = poligrafoRepository.findAll();
+        return ResponseEntity.ok(poligrafos);
     }
 
-    // get poligrafo by id rest api
-    @GetMapping("/poligrafos/{id}")
+    // Crear un nuevo poligrafo
+    @PostMapping
+    public ResponseEntity<Poligrafo> createPoligrafo(@RequestBody Poligrafo poligrafo) {
+        Poligrafo saved = poligrafoRepository.save(poligrafo);
+        return ResponseEntity.ok(saved);
+    }
+
+    // Obtener un poligrafo por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Poligrafo> getPoligrafoById(@PathVariable Long id) {
         Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Poligrafo not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
         return ResponseEntity.ok(poligrafo);
     }
 
-    // update poligrafo rest api
-
-    @PutMapping("/poligrafos/{id}")
-    public ResponseEntity<Poligrafo> updatePoligrafo(@PathVariable Long id, @RequestBody Poligrafo poligrafoDetails){
+    // Actualizar un poligrafo existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Poligrafo> updatePoligrafo(@PathVariable Long id, @RequestBody Poligrafo poligrafoDetails) {
         Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Poligrafo not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
 
         poligrafo.setEstudiante(poligrafoDetails.getEstudiante());
         poligrafo.setAsignatura(poligrafoDetails.getAsignatura());
-        poligrafo.setNota(poligrafoDetails.getNota());
+        poligrafo.setCalificaciones(poligrafoDetails.getCalificaciones());
         poligrafo.setFechaEmision(poligrafoDetails.getFechaEmision());
         poligrafo.setSemestreAcademico(poligrafoDetails.getSemestreAcademico());
         poligrafo.setCreditosMatriculados(poligrafoDetails.getCreditosMatriculados());
@@ -57,16 +61,15 @@ public class PoligrafoController {
         poligrafo.setCreditosAcumulados(poligrafoDetails.getCreditosAcumulados());
         poligrafo.setPromedioAcumulado(poligrafoDetails.getPromedioAcumulado());
 
-
-        Poligrafo updatedPoligrafo = poligrafoRepository.save(poligrafo);
-        return ResponseEntity.ok(updatedPoligrafo);
+        Poligrafo updated = poligrafoRepository.save(poligrafo);
+        return ResponseEntity.ok(updated);
     }
 
-    // delete poligrafo rest api
-    @DeleteMapping("/poligrafos/{id}")
-    public ResponseEntity<Map<String, Boolean>> deletePoligrafo(@PathVariable Long id){
+    // Eliminar un poligrafo
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Boolean>> deletePoligrafo(@PathVariable Long id) {
         Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Poligrafo not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
 
         poligrafoRepository.delete(poligrafo);
         Map<String, Boolean> response = new HashMap<>();

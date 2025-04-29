@@ -12,51 +12,58 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = {"*"})
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/administradores")
+@CrossOrigin(origins = "*")
 public class AdministradorController {
 
+    private final AdministradorRepository administradorRepository;
+
     @Autowired
-    private AdministradorRepository administradorRepository;
-
-    // Get all administradores
-    @GetMapping("/administradores")
-    public List<Administrador> getAllAdministradores() {
-        return administradorRepository.findAll();
+    public AdministradorController(AdministradorRepository administradorRepository) {
+        this.administradorRepository = administradorRepository;
     }
 
-    // Create administrador rest api
-    @PostMapping("/administradores")
-    public Administrador createAdministrador(@RequestBody Administrador administrador) {
-        return administradorRepository.save(administrador);
+    // Obtener todos los administradores
+    @GetMapping
+    public ResponseEntity<List<Administrador>> getAllAdministradores() {
+        List<Administrador> administradores = administradorRepository.findAll();
+        return ResponseEntity.ok(administradores);
     }
 
-    // Get administrador by id rest api
-    @GetMapping("/administradores/{id}")
+    // Crear nuevo administrador
+    @PostMapping
+    public ResponseEntity<Administrador> createAdministrador(@RequestBody Administrador administrador) {
+        Administrador savedAdministrador = administradorRepository.save(administrador);
+        return ResponseEntity.ok(savedAdministrador);
+    }
+
+    // Obtener administrador por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Administrador> getAdministradorById(@PathVariable Long id) {
         Administrador administrador = administradorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador no existe con ID: " + id));
         return ResponseEntity.ok(administrador);
     }
 
-    // Update administrador rest api
-    @PutMapping("/administradores/{id}")
+    // Actualizar administrador existente
+    @PutMapping("/{id}")
     public ResponseEntity<Administrador> updateAdministrador(@PathVariable Long id, @RequestBody Administrador administradorDetails) {
         Administrador administrador = administradorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador no existe con ID: " + id));
 
         administrador.setFacultad(administradorDetails.getFacultad());
         administrador.setCodigoInstitucional(administradorDetails.getCodigoInstitucional());
         administrador.setCorreoInstitucional(administradorDetails.getCorreoInstitucional());
+
         Administrador updatedAdministrador = administradorRepository.save(administrador);
         return ResponseEntity.ok(updatedAdministrador);
     }
 
-    // Delete administrador rest api
-    @DeleteMapping("/administradores/{id}")
+    // Eliminar administrador
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAdministrador(@PathVariable Long id) {
         Administrador administrador = administradorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador no existe con ID: " + id));
 
         administradorRepository.delete(administrador);
         Map<String, Boolean> response = new HashMap<>();

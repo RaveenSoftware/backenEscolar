@@ -1,85 +1,85 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.ProgramaAcademico;
 import co.edu.udes.backend.repositories.ProgramaAcademicoRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/programas-academicos")
+@CrossOrigin(origins = "*")
 public class ProgramaAcademicoController {
+
+    private final ProgramaAcademicoRepository programaAcademicoRepository;
+
     @Autowired
-    private ProgramaAcademicoRepository programaAcademicoRepository;
-
-    public ProgramaAcademicoController() {
+    public ProgramaAcademicoController(ProgramaAcademicoRepository programaAcademicoRepository) {
+        this.programaAcademicoRepository = programaAcademicoRepository;
     }
 
-    @GetMapping({"/programaAcademicos"})
-    public List<ProgramaAcademico> getAllProgramaAcademicos() {
-        return this.programaAcademicoRepository.findAll();
+    // Obtener todos los programas académicos
+    @GetMapping
+    public ResponseEntity<List<ProgramaAcademico>> getAllProgramaAcademicos() {
+        List<ProgramaAcademico> programas = programaAcademicoRepository.findAll();
+        return ResponseEntity.ok(programas);
     }
 
-    @PostMapping({"/programaAcademicos"})
-    public ProgramaAcademico createProgramaAcademico(@RequestBody ProgramaAcademico programaAcademico) {
-        return (ProgramaAcademico)this.programaAcademicoRepository.save(programaAcademico);
+    // Crear nuevo programa académico
+    @PostMapping
+    public ResponseEntity<ProgramaAcademico> createProgramaAcademico(@RequestBody ProgramaAcademico programaAcademico) {
+        ProgramaAcademico saved = programaAcademicoRepository.save(programaAcademico);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping({"/programaAcademicos/{id}"})
+    // Obtener programa académico por ID
+    @GetMapping("/{id}")
     public ResponseEntity<ProgramaAcademico> getProgramaAcademicoById(@PathVariable Long id) {
-        ProgramaAcademico programaAcademico = (ProgramaAcademico)this.programaAcademicoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ProgramaAcademico not exist with id :" + id));
-        return ResponseEntity.ok(programaAcademico);
+        ProgramaAcademico programa = programaAcademicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Programa académico no existe con ID: " + id));
+        return ResponseEntity.ok(programa);
     }
 
-    @PutMapping({"/programaAcademicos/{id}"})
-    public ResponseEntity<ProgramaAcademico> updateProgramaAcademico(@PathVariable Long id, @RequestBody ProgramaAcademico programaAcademicoDetails) {
-        ProgramaAcademico programaAcademico = (ProgramaAcademico)this.programaAcademicoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ProgramaAcademico not exist with id :" + id));
-        programaAcademico.setCodigoPrograma(programaAcademicoDetails.getCodigoPrograma());
-        programaAcademico.setNombrePrograma(programaAcademicoDetails.getNombrePrograma());
-        programaAcademico.setPensums(programaAcademicoDetails.getPensums());
-        programaAcademico.setDescripcion(programaAcademicoDetails.getDescripcion());
-        programaAcademico.setEstado(programaAcademicoDetails.getEstado());
-        programaAcademico.setFacultad(programaAcademicoDetails.getFacultad());
-        programaAcademico.setCreditosPrograma(programaAcademicoDetails.getCreditosPrograma());
-        programaAcademico.setCursos(programaAcademicoDetails.getCursos());
-        ProgramaAcademico updatedProgramaAcademico = (ProgramaAcademico)this.programaAcademicoRepository.save(programaAcademico);
-        return ResponseEntity.ok(updatedProgramaAcademico);
+    // Actualizar programa académico
+    @PutMapping("/{id}")
+    public ResponseEntity<ProgramaAcademico> updateProgramaAcademico(@PathVariable Long id, @RequestBody ProgramaAcademico details) {
+        ProgramaAcademico programa = programaAcademicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Programa académico no existe con ID: " + id));
+
+        programa.setCodigoPrograma(details.getCodigoPrograma());
+        programa.setNombrePrograma(details.getNombrePrograma());
+        programa.setPensums(details.getPensums());
+        programa.setDescripcion(details.getDescripcion());
+        programa.setEstado(details.isEstado());
+        programa.setFacultad(details.getFacultad());
+        programa.setCreditosPrograma(details.getCreditosPrograma());
+        programa.setCursos(details.getCursos());
+
+        ProgramaAcademico updated = programaAcademicoRepository.save(programa);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping({"/programaAcademicos/{id}"})
+    // Eliminar programa académico
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteProgramaAcademico(@PathVariable Long id) {
-        ProgramaAcademico programaAcademico = (ProgramaAcademico)this.programaAcademicoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ProgramaAcademico not exist with id :" + id));
-        this.programaAcademicoRepository.delete(programaAcademico);
-        Map<String, Boolean> response = new HashMap();
+        ProgramaAcademico programa = programaAcademicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Programa académico no existe con ID: " + id));
+
+        programaAcademicoRepository.delete(programa);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping({"/programaAcademicos/facultad/{id}"})
-    public List<ProgramaAcademico> getProgramaAcademicoByFacultadId(@PathVariable Long id) {
-        List<ProgramaAcademico> programaAcademicos = this.programaAcademicoRepository.findProgramaAcademicoByFacultadId(id);
-        return programaAcademicos;
+    // Obtener programas académicos por ID de facultad
+    @GetMapping("/facultad/{id}")
+    public ResponseEntity<List<ProgramaAcademico>> getProgramaAcademicoByFacultadId(@PathVariable Long id) {
+        List<ProgramaAcademico> programas = programaAcademicoRepository.findProgramaAcademicoByFacultadId(id);
+        return ResponseEntity.ok(programas);
     }
 }
-

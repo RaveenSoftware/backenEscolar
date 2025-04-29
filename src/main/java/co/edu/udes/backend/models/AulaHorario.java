@@ -1,58 +1,42 @@
 package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(
-        name = "aulas_horarios"
-)
+@Entity(name = "aulas_horarios")
 public class AulaHorario {
+
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne
-    @JoinColumn(
-            name = "aula_id"
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aula_id", nullable = false)
     private Aula aula;
-    @ManyToOne
-    @JoinColumn(
-            name = "horario_id"
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "horario_id", nullable = false)
     private Horario horario;
-    @Column(
-            name = "estado"
-    )
-    private boolean estado;
-    @ManyToOne
-    @JoinColumn(
-            name = "curso_id"
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_id", nullable = false)
     private Curso curso;
 
+    @Column(name = "estado", nullable = false)
+    private boolean estado;
+
     public AulaHorario() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public AulaHorario(long id, Aula aula, Horario horario, boolean estado, Curso curso) {
-        this.id = id;
+    public AulaHorario(Aula aula, Horario horario, Curso curso, boolean estado) {
         this.aula = aula;
         this.horario = horario;
-        this.estado = estado;
         this.curso = curso;
+        this.estado = estado;
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(long id) {
@@ -60,7 +44,7 @@ public class AulaHorario {
     }
 
     public Aula getAula() {
-        return this.aula;
+        return aula;
     }
 
     public void setAula(Aula aula) {
@@ -68,27 +52,26 @@ public class AulaHorario {
     }
 
     public Horario getHorario() {
-        return this.horario;
+        return horario;
     }
 
     public void setHorario(Horario horario) {
         this.horario = horario;
     }
 
-    public boolean isEstado() {
-        return this.estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
-
     public Curso getCurso() {
-        return this.curso;
+        return curso;
     }
 
     public void setCurso(Curso curso) {
         this.curso = curso;
     }
-}
 
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
+}

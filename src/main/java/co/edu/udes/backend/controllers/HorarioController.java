@@ -1,75 +1,74 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.Horario;
 import co.edu.udes.backend.repositories.HorarioRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/horarios")
+@CrossOrigin(origins = "*")
 public class HorarioController {
+
+    private final HorarioRepository horarioRepository;
+
     @Autowired
-    private HorarioRepository horarioRepository;
-
-    public HorarioController() {
+    public HorarioController(HorarioRepository horarioRepository) {
+        this.horarioRepository = horarioRepository;
     }
 
-    @GetMapping({"/horarios"})
-    public List<Horario> getAllHorarios() {
-        return this.horarioRepository.findAll();
+    // Obtener todos los horarios
+    @GetMapping
+    public ResponseEntity<List<Horario>> getAllHorarios() {
+        List<Horario> horarios = horarioRepository.findAll();
+        return ResponseEntity.ok(horarios);
     }
 
-    @PostMapping({"/horarios"})
-    public Horario createHorario(@RequestBody Horario horario) {
-        return (Horario)this.horarioRepository.save(horario);
+    // Crear nuevo horario
+    @PostMapping
+    public ResponseEntity<Horario> createHorario(@RequestBody Horario horario) {
+        Horario savedHorario = horarioRepository.save(horario);
+        return ResponseEntity.ok(savedHorario);
     }
 
-    @GetMapping({"/horarios/{id}"})
+    // Obtener horario por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Horario> getHorarioById(@PathVariable Long id) {
-        Horario horario = (Horario)this.horarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Horario not exist with id :" + id));
+        Horario horario = horarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Horario no existe con ID: " + id));
         return ResponseEntity.ok(horario);
     }
 
-    @PutMapping({"/horarios/{id}"})
+    // Actualizar horario existente
+    @PutMapping("/{id}")
     public ResponseEntity<Horario> updateHorario(@PathVariable Long id, @RequestBody Horario horarioDetails) {
-        Horario horario = (Horario)this.horarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Horario not exist with id :" + id));
+        Horario horario = horarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Horario no existe con ID: " + id));
+
         horario.setHoraInicio(horarioDetails.getHoraInicio());
-        horario.setHorafinalizacion(horarioDetails.getHorafinalizacion());
+        horario.setHoraFinalizacion(horarioDetails.getHoraFinalizacion());
         horario.setDia(horarioDetails.getDia());
         horario.setEstado(horarioDetails.isEstado());
-        Horario updatedHorario = (Horario)this.horarioRepository.save(horario);
+
+        Horario updatedHorario = horarioRepository.save(horario);
         return ResponseEntity.ok(updatedHorario);
     }
 
-    @DeleteMapping({"/horarios/{id}"})
+    // Eliminar horario
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteHorario(@PathVariable Long id) {
-        Horario horario = (Horario)this.horarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Horario not exist with id :" + id));
-        this.horarioRepository.delete(horario);
-        Map<String, Boolean> response = new HashMap();
+        Horario horario = horarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Horario no existe con ID: " + id));
+
+        horarioRepository.delete(horario);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

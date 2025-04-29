@@ -1,10 +1,7 @@
 package co.edu.udes.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
 @Entity(name = "poligrafos")
 public class Poligrafo {
@@ -23,14 +20,14 @@ public class Poligrafo {
 
     @ManyToOne
     @JoinColumn(name = "nota_id")
-    private Calificaciones Calificaciones;
+    private Calificaciones calificaciones;
 
     @Column(name = "fecha_emision")
     private Date fechaEmision;
 
     @ManyToOne
     @JoinColumn(name = "semestre_id")
-    private SemestreAcademico semestreAcademico; // Ajustado a semestreAcademico
+    private SemestreAcademico semestreAcademico;
 
     @Column(name = "creditos_matriculados")
     private int creditosMatriculados;
@@ -47,11 +44,13 @@ public class Poligrafo {
     public Poligrafo() {
     }
 
-    public Poligrafo(long id, Estudiante estudiante, Asignatura asignatura, Calificaciones Calificaciones, Date fechaEmision, SemestreAcademico semestreAcademico, int creditosMatriculados, float promedio, int creditosAcumulados, float promedioAcumulado) {
+    public Poligrafo(long id, Estudiante estudiante, Asignatura asignatura, Calificaciones calificaciones,
+                     Date fechaEmision, SemestreAcademico semestreAcademico, int creditosMatriculados,
+                     float promedio, int creditosAcumulados, float promedioAcumulado) {
         this.id = id;
         this.estudiante = estudiante;
         this.asignatura = asignatura;
-        this.Calificaciones = Calificaciones;
+        this.calificaciones = calificaciones;
         this.fechaEmision = fechaEmision;
         this.semestreAcademico = semestreAcademico;
         this.creditosMatriculados = creditosMatriculados;
@@ -84,12 +83,12 @@ public class Poligrafo {
         this.asignatura = asignatura;
     }
 
-    public Calificaciones getNota() {
-        return Calificaciones;
+    public Calificaciones getCalificaciones() {
+        return calificaciones;
     }
 
-    public void setNota(Calificaciones Calificaciones) {
-        this.Calificaciones = Calificaciones;
+    public void setCalificaciones(Calificaciones calificaciones) {
+        this.calificaciones = calificaciones;
     }
 
     public Date getFechaEmision() {
@@ -100,12 +99,12 @@ public class Poligrafo {
         this.fechaEmision = fechaEmision;
     }
 
-    public SemestreAcademico getSemestreAcademico() { // Asegúrate de que el nombre coincide
-        return semestreAcademico; // Asegúrate de que el nombre coincide
+    public SemestreAcademico getSemestreAcademico() {
+        return semestreAcademico;
     }
 
-    public void setSemestreAcademico(SemestreAcademico semestreAcademico) { // Asegúrate de que el nombre coincide
-        this.semestreAcademico = semestreAcademico; // Asegúrate de que el nombre coincide
+    public void setSemestreAcademico(SemestreAcademico semestreAcademico) {
+        this.semestreAcademico = semestreAcademico;
     }
 
     public int getCreditosMatriculados() {

@@ -1,8 +1,6 @@
 package co.edu.udes.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity(name = "programas_academicos")
@@ -18,7 +16,7 @@ public class ProgramaAcademico {
     @Column(name = "nombre_programa")
     private String nombrePrograma;
 
-    @OneToMany(mappedBy = "programaAcademico" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "programaAcademico", fetch = FetchType.LAZY)
     private List<Pensum> pensums;
 
     @Column(name = "descripcion")
@@ -40,7 +38,9 @@ public class ProgramaAcademico {
     public ProgramaAcademico() {
     }
 
-    public ProgramaAcademico(long id, String codigoPrograma, String nombrePrograma, List<Pensum> pensums, String descripcion, boolean estado, Facultad facultad, String creditosPrograma, List<Curso> cursos) {
+    public ProgramaAcademico(long id, String codigoPrograma, String nombrePrograma, List<Pensum> pensums,
+                             String descripcion, boolean estado, Facultad facultad,
+                             String creditosPrograma, List<Curso> cursos) {
         this.id = id;
         this.codigoPrograma = codigoPrograma;
         this.nombrePrograma = nombrePrograma;
@@ -92,7 +92,7 @@ public class ProgramaAcademico {
         this.descripcion = descripcion;
     }
 
-    public boolean getEstado() {
+    public boolean isEstado() {  // <- este es el getter correcto para boolean
         return estado;
     }
 

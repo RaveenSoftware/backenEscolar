@@ -1,75 +1,74 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.AulaHorario;
 import co.edu.udes.backend.repositories.AulaHorarioRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/aula-horarios")
+@CrossOrigin(origins = "*")
 public class AulaHorarioController {
+
+    private final AulaHorarioRepository aulaHorarioRepository;
+
     @Autowired
-    private AulaHorarioRepository aulaHorarioRepository;
-
-    public AulaHorarioController() {
+    public AulaHorarioController(AulaHorarioRepository aulaHorarioRepository) {
+        this.aulaHorarioRepository = aulaHorarioRepository;
     }
 
-    @GetMapping({"/aulaHorarios"})
-    public List<AulaHorario> getAllAulaHorarios() {
-        return this.aulaHorarioRepository.findAll();
+    // Obtener todos los registros de AulaHorario
+    @GetMapping
+    public ResponseEntity<List<AulaHorario>> getAllAulaHorarios() {
+        List<AulaHorario> aulaHorarios = aulaHorarioRepository.findAll();
+        return ResponseEntity.ok(aulaHorarios);
     }
 
-    @PostMapping({"/aulaHorarios"})
-    public AulaHorario createAulaHorario(@RequestBody AulaHorario aulaHorario) {
-        return (AulaHorario)this.aulaHorarioRepository.save(aulaHorario);
+    // Crear un nuevo registro de AulaHorario
+    @PostMapping
+    public ResponseEntity<AulaHorario> createAulaHorario(@RequestBody AulaHorario aulaHorario) {
+        AulaHorario savedAulaHorario = aulaHorarioRepository.save(aulaHorario);
+        return ResponseEntity.ok(savedAulaHorario);
     }
 
-    @GetMapping({"/aulaHorarios/{id}"})
+    // Obtener AulaHorario por ID
+    @GetMapping("/{id}")
     public ResponseEntity<AulaHorario> getAulaHorarioById(@PathVariable Long id) {
-        AulaHorario aulaHorario = (AulaHorario)this.aulaHorarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("AulaHorario not exist with id :" + id));
+        AulaHorario aulaHorario = aulaHorarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("AulaHorario no existe con ID: " + id));
         return ResponseEntity.ok(aulaHorario);
     }
 
-    @PutMapping({"/aulaHorarios/{id}"})
+    // Actualizar un AulaHorario existente
+    @PutMapping("/{id}")
     public ResponseEntity<AulaHorario> updateAulaHorario(@PathVariable Long id, @RequestBody AulaHorario aulaHorarioDetails) {
-        AulaHorario aulaHorario = (AulaHorario)this.aulaHorarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("AulaHorario not exist with id :" + id));
+        AulaHorario aulaHorario = aulaHorarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("AulaHorario no existe con ID: " + id));
+
         aulaHorario.setAula(aulaHorarioDetails.getAula());
         aulaHorario.setHorario(aulaHorarioDetails.getHorario());
         aulaHorario.setEstado(aulaHorarioDetails.isEstado());
         aulaHorario.setCurso(aulaHorarioDetails.getCurso());
-        AulaHorario updatedAulaHorario = (AulaHorario)this.aulaHorarioRepository.save(aulaHorario);
+
+        AulaHorario updatedAulaHorario = aulaHorarioRepository.save(aulaHorario);
         return ResponseEntity.ok(updatedAulaHorario);
     }
 
-    @DeleteMapping({"/aulaHorarios/{id}"})
+    // Eliminar un AulaHorario
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAulaHorario(@PathVariable Long id) {
-        AulaHorario aulaHorario = (AulaHorario)this.aulaHorarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("AulaHorario not exist with id :" + id));
-        this.aulaHorarioRepository.delete(aulaHorario);
-        Map<String, Boolean> response = new HashMap();
+        AulaHorario aulaHorario = aulaHorarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("AulaHorario no existe con ID: " + id));
+
+        aulaHorarioRepository.delete(aulaHorario);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

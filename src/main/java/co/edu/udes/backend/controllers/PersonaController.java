@@ -12,38 +12,44 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = {"*"})
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/personas")
+@CrossOrigin(origins = "*")
 public class PersonaController {
 
+    private final PersonaRepository personaRepository;
+
     @Autowired
-    private PersonaRepository personaRepository;
-
-    // Get all personas
-    @GetMapping("/personas")
-    public List<Persona> getAllPersonas() {
-        return personaRepository.findAll();
+    public PersonaController(PersonaRepository personaRepository) {
+        this.personaRepository = personaRepository;
     }
 
-    // Create persona rest api
-    @PostMapping("/personas")
-    public Persona createPersona(@RequestBody Persona persona) {
-        return personaRepository.save(persona);
+    // Obtener todas las personas
+    @GetMapping
+    public ResponseEntity<List<Persona>> getAllPersonas() {
+        List<Persona> personas = personaRepository.findAll();
+        return ResponseEntity.ok(personas);
     }
 
-    // Get persona by id rest api
-    @GetMapping("/personas/{id}")
+    // Crear una nueva persona
+    @PostMapping
+    public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
+        Persona savedPersona = personaRepository.save(persona);
+        return ResponseEntity.ok(savedPersona);
+    }
+
+    // Obtener persona por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Persona> getPersonaById(@PathVariable Long id) {
         Persona persona = personaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Persona not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
         return ResponseEntity.ok(persona);
     }
 
-    // Update persona rest api
-    @PutMapping("/personas/{id}")
+    // Actualizar persona existente
+    @PutMapping("/{id}")
     public ResponseEntity<Persona> updatePersona(@PathVariable Long id, @RequestBody Persona personaDetails) {
         Persona persona = personaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Persona not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
 
         persona.setNombre(personaDetails.getNombre());
         persona.setTelefono(personaDetails.getTelefono());
@@ -52,16 +58,15 @@ public class PersonaController {
         persona.setNumeroDocumento(personaDetails.getNumeroDocumento());
         persona.setEstado(personaDetails.isEstado());
 
-
         Persona updatedPersona = personaRepository.save(persona);
         return ResponseEntity.ok(updatedPersona);
     }
 
-    // Delete persona rest api
-    @DeleteMapping("/personas/{id}")
+    // Eliminar persona
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deletePersona(@PathVariable Long id) {
         Persona persona = personaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Persona not exist with id :" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
 
         personaRepository.delete(persona);
         Map<String, Boolean> response = new HashMap<>();

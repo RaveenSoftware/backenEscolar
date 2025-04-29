@@ -1,73 +1,72 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.TipoDocumento;
 import co.edu.udes.backend.repositories.TipoDocumentoRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/tipos-documentos")
+@CrossOrigin(origins = "*")
 public class TipoDocumentoController {
+
+    private final TipoDocumentoRepository tipoDocumentoRepository;
+
     @Autowired
-    private TipoDocumentoRepository tipoDocumentoRepository;
-
-    public TipoDocumentoController() {
+    public TipoDocumentoController(TipoDocumentoRepository tipoDocumentoRepository) {
+        this.tipoDocumentoRepository = tipoDocumentoRepository;
     }
 
-    @GetMapping({"/tipos_documentos"})
-    public List<TipoDocumento> getAllTiposDocumento() {
-        return this.tipoDocumentoRepository.findAll();
+    // Obtener todos los tipos de documento
+    @GetMapping
+    public ResponseEntity<List<TipoDocumento>> getAllTiposDocumento() {
+        List<TipoDocumento> tipos = tipoDocumentoRepository.findAll();
+        return ResponseEntity.ok(tipos);
     }
 
-    @PostMapping({"/tipos_documentos"})
-    public TipoDocumento createTipoDocumento(@RequestBody TipoDocumento tipoDocumento) {
-        return (TipoDocumento)this.tipoDocumentoRepository.save(tipoDocumento);
+    // Crear nuevo tipo de documento
+    @PostMapping
+    public ResponseEntity<TipoDocumento> createTipoDocumento(@RequestBody TipoDocumento tipoDocumento) {
+        TipoDocumento saved = tipoDocumentoRepository.save(tipoDocumento);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping({"/tipos_documentos/{id}"})
+    // Obtener tipo de documento por ID
+    @GetMapping("/{id}")
     public ResponseEntity<TipoDocumento> getTipoDocumentoById(@PathVariable Long id) {
-        TipoDocumento tipoDocumento = (TipoDocumento)this.tipoDocumentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoDocumento not exist with id :" + id));
-        return ResponseEntity.ok(tipoDocumento);
+        TipoDocumento tipo = tipoDocumentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));
+        return ResponseEntity.ok(tipo);
     }
 
-    @PutMapping({"/tipos_documentos/{id}"})
-    public ResponseEntity<TipoDocumento> updateTipoDocumento(@PathVariable Long id, @RequestBody TipoDocumento tipoDocumentoDetails) {
-        TipoDocumento tipoDocumento = (TipoDocumento)this.tipoDocumentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoDocumento not exist with id :" + id));
-        tipoDocumento.setNombre(tipoDocumentoDetails.getNombre());
-        tipoDocumento.setEstado(tipoDocumentoDetails.isEstado());
-        TipoDocumento updatedTipoDocumento = (TipoDocumento)this.tipoDocumentoRepository.save(tipoDocumento);
-        return ResponseEntity.ok(updatedTipoDocumento);
+    // Actualizar tipo de documento
+    @PutMapping("/{id}")
+    public ResponseEntity<TipoDocumento> updateTipoDocumento(@PathVariable Long id, @RequestBody TipoDocumento tipoDetails) {
+        TipoDocumento tipo = tipoDocumentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));
+
+        tipo.setNombre(tipoDetails.getNombre());
+        tipo.setEstado(tipoDetails.isEstado());
+
+        TipoDocumento updated = tipoDocumentoRepository.save(tipo);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping({"/tipos_documentos/{id}"})
+    // Eliminar tipo de documento
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteTipoDocumento(@PathVariable Long id) {
-        TipoDocumento tipoDocumento = (TipoDocumento)this.tipoDocumentoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoDocumento not exist with id :" + id));
-        this.tipoDocumentoRepository.delete(tipoDocumento);
-        Map<String, Boolean> response = new HashMap();
+        TipoDocumento tipo = tipoDocumentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));
+
+        tipoDocumentoRepository.delete(tipo);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

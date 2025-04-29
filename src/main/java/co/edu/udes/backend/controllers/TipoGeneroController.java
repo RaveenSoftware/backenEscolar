@@ -1,73 +1,72 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.TipoGenero;
 import co.edu.udes.backend.repositories.TipoGeneroRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(
-        origins = {"*"}
-)
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/tipos-generos")
+@CrossOrigin(origins = "*")
 public class TipoGeneroController {
+
+    private final TipoGeneroRepository tipoGeneroRepository;
+
     @Autowired
-    private TipoGeneroRepository tipoGeneroRepository;
-
-    public TipoGeneroController() {
+    public TipoGeneroController(TipoGeneroRepository tipoGeneroRepository) {
+        this.tipoGeneroRepository = tipoGeneroRepository;
     }
 
-    @GetMapping({"/tipos_generos"})
-    public List<TipoGenero> getAllTiposGenero() {
-        return this.tipoGeneroRepository.findAll();
+    // Obtener todos los tipos de género
+    @GetMapping
+    public ResponseEntity<List<TipoGenero>> getAllTiposGenero() {
+        List<TipoGenero> lista = tipoGeneroRepository.findAll();
+        return ResponseEntity.ok(lista);
     }
 
-    @PostMapping({"/tipos_generos"})
-    public TipoGenero createTipoGenero(@RequestBody TipoGenero tipoGenero) {
-        return (TipoGenero)this.tipoGeneroRepository.save(tipoGenero);
+    // Crear un nuevo tipo de género
+    @PostMapping
+    public ResponseEntity<TipoGenero> createTipoGenero(@RequestBody TipoGenero tipoGenero) {
+        TipoGenero saved = tipoGeneroRepository.save(tipoGenero);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping({"/tipos_generos/{id}"})
+    // Obtener tipo de género por ID
+    @GetMapping("/{id}")
     public ResponseEntity<TipoGenero> getTipoGeneroById(@PathVariable Long id) {
-        TipoGenero tipoGenero = (TipoGenero)this.tipoGeneroRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoGenero not exist with id :" + id));
-        return ResponseEntity.ok(tipoGenero);
+        TipoGenero genero = tipoGeneroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));
+        return ResponseEntity.ok(genero);
     }
 
-    @PutMapping({"/tipos_generos/{id}"})
-    public ResponseEntity<TipoGenero> updateTipoGenero(@PathVariable Long id, @RequestBody TipoGenero tipoGeneroDetails) {
-        TipoGenero tipoGenero = (TipoGenero)this.tipoGeneroRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoGenero not exist with id :" + id));
-        tipoGenero.setNombre(tipoGeneroDetails.getNombre());
-        tipoGenero.setEstado(tipoGeneroDetails.isEstado());
-        TipoGenero updatedTipoGenero = (TipoGenero)this.tipoGeneroRepository.save(tipoGenero);
-        return ResponseEntity.ok(updatedTipoGenero);
+    // Actualizar tipo de género
+    @PutMapping("/{id}")
+    public ResponseEntity<TipoGenero> updateTipoGenero(@PathVariable Long id, @RequestBody TipoGenero generoDetails) {
+        TipoGenero genero = tipoGeneroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));
+
+        genero.setNombre(generoDetails.getNombre());
+        genero.setEstado(generoDetails.isEstado());
+
+        TipoGenero updated = tipoGeneroRepository.save(genero);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping({"/tipos_generos/{id}"})
+    // Eliminar tipo de género
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteTipoGenero(@PathVariable Long id) {
-        TipoGenero tipoGenero = (TipoGenero)this.tipoGeneroRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TipoGenero not exist with id :" + id));
-        this.tipoGeneroRepository.delete(tipoGenero);
-        Map<String, Boolean> response = new HashMap();
+        TipoGenero genero = tipoGeneroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));
+
+        tipoGeneroRepository.delete(genero);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

@@ -3,35 +3,46 @@ package co.edu.udes.backend.models;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "evaluaciones")
+@Entity(name = "evaluaciones")
 public class Evaluacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tipo")
+    @Column(name = "tipo", nullable = false)
     private String tipo;
 
-    @Column(name = "fecha")
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @Column(name = "nota")
+    @Column(name = "nota", nullable = false)
     private Double nota;
 
-    @ManyToOne
-    @JoinColumn(name = "estudiante_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
 
-    @ManyToOne
-    @JoinColumn(name = "asignatura_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asignatura_id", nullable = false)
     private Asignatura asignatura;
 
     @Column(name = "observaciones")
     private String observaciones;
 
-    // Getters y Setters
+    public Evaluacion() {
+        // Constructor por defecto requerido por JPA
+    }
+
+    public Evaluacion(String tipo, LocalDate fecha, Double nota,
+                      Estudiante estudiante, Asignatura asignatura, String observaciones) {
+        this.tipo = tipo;
+        this.fecha = fecha;
+        this.nota = nota;
+        this.estudiante = estudiante;
+        this.asignatura = asignatura;
+        this.observaciones = observaciones;
+    }
 
     public Long getId() {
         return id;

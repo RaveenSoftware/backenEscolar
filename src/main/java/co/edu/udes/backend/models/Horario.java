@@ -1,90 +1,64 @@
 package co.edu.udes.backend.models;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+import jakarta.persistence.*;
+import java.time.LocalTime;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.sql.Time;
-
-@Entity
-@Table(
-        name = "horarios"
-)
+@Entity(name = "horarios")
 public class Horario {
+
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(
-            name = "hora_inicio"
-    )
-    private Time horaInicio;
-    @Column(
-            name = "hora_finalizacion"
-    )
-    private Time horafinalizacion;
-    @Column(
-            name = "dia"
-    )
+
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio;
+
+    @Column(name = "hora_finalizacion", nullable = false)
+    private LocalTime horaFinalizacion;
+
+    @Column(name = "dia", nullable = false)
     private String dia;
-    @Column(
-            name = "estado"
-    )
+
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
     public Horario() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Horario(long id, Time horaInicio, Time horafinalizacion, String dia, boolean estado) {
-        this.id = id;
+    public Horario(LocalTime horaInicio, LocalTime horaFinalizacion, String dia, boolean estado) {
         this.horaInicio = horaInicio;
-        this.horafinalizacion = horafinalizacion;
-        this.dia = dia;
-        this.estado = estado;
-    }
-
-    public Horario(Time horaInicio, Time horafinalizacion, String dia, boolean estado) {
-        this.horaInicio = horaInicio;
-        this.horafinalizacion = horafinalizacion;
+        this.horaFinalizacion = horaFinalizacion;
         this.dia = dia;
         this.estado = estado;
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(long id) {
         this.id = id;
     }
 
-    public Time getHoraInicio() {
-        return this.horaInicio;
+    public LocalTime getHoraInicio() {
+        return horaInicio;
     }
 
-    public void setHoraInicio(Time horaInicio) {
+    public void setHoraInicio(LocalTime horaInicio) {
         this.horaInicio = horaInicio;
     }
 
-    public Time getHorafinalizacion() {
-        return this.horafinalizacion;
+    public LocalTime getHoraFinalizacion() {
+        return horaFinalizacion;
     }
 
-    public void setHorafinalizacion(Time horafinalizacion) {
-        this.horafinalizacion = horafinalizacion;
+    public void setHoraFinalizacion(LocalTime horaFinalizacion) {
+        this.horaFinalizacion = horaFinalizacion;
     }
 
     public String getDia() {
-        return this.dia;
+        return dia;
     }
 
     public void setDia(String dia) {
@@ -92,11 +66,10 @@ public class Horario {
     }
 
     public boolean isEstado() {
-        return this.estado;
+        return estado;
     }
 
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
 }
-

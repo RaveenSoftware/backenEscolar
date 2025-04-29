@@ -1,69 +1,72 @@
 package co.edu.udes.backend.controllers;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import co.edu.udes.backend.models.Facultad;
 import co.edu.udes.backend.repositories.FacultadRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping({"/api/v1/"})
+@RequestMapping("/api/v1/facultades")
+@CrossOrigin(origins = "*")
 public class FacultadController {
+
+    private final FacultadRepository facultadRepository;
+
     @Autowired
-    private FacultadRepository facultadRepository;
-
-    public FacultadController() {
+    public FacultadController(FacultadRepository facultadRepository) {
+        this.facultadRepository = facultadRepository;
     }
 
-    @GetMapping({"/facultades"})
-    public List<Facultad> getAllFacultades() {
-        return this.facultadRepository.findAll();
+    // Obtener todas las facultades
+    @GetMapping
+    public ResponseEntity<List<Facultad>> getAllFacultades() {
+        List<Facultad> facultades = facultadRepository.findAll();
+        return ResponseEntity.ok(facultades);
     }
 
-    @PostMapping({"/facultades"})
-    public Facultad createFacultad(@RequestBody Facultad facultad) {
-        return (Facultad)this.facultadRepository.save(facultad);
+    // Crear nueva facultad
+    @PostMapping
+    public ResponseEntity<Facultad> createFacultad(@RequestBody Facultad facultad) {
+        Facultad savedFacultad = facultadRepository.save(facultad);
+        return ResponseEntity.ok(savedFacultad);
     }
 
-    @GetMapping({"/facultades/{id}"})
+    // Obtener facultad por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Facultad> getFacultadById(@PathVariable Long id) {
-        Facultad facultad = (Facultad)this.facultadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Facultad not exist with id :" + id));
+        Facultad facultad = facultadRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Facultad no existe con ID: " + id));
         return ResponseEntity.ok(facultad);
     }
 
-    @PutMapping({"/facultades/{id}"})
+    // Actualizar facultad existente
+    @PutMapping("/{id}")
     public ResponseEntity<Facultad> updateFacultad(@PathVariable Long id, @RequestBody Facultad facultadDetails) {
-        Facultad facultad = (Facultad)this.facultadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Facultad not exist with id :" + id));
+        Facultad facultad = facultadRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Facultad no existe con ID: " + id));
+
         facultad.setNombre(facultadDetails.getNombre());
         facultad.setEstado(facultadDetails.isEstado());
-        Facultad updatedFacultad = (Facultad)this.facultadRepository.save(facultad);
+
+        Facultad updatedFacultad = facultadRepository.save(facultad);
         return ResponseEntity.ok(updatedFacultad);
     }
 
-    @DeleteMapping({"/facultades/{id}"})
+    // Eliminar facultad
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteFacultad(@PathVariable Long id) {
-        Facultad facultad = (Facultad)this.facultadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Facultad not exist with id :" + id));
-        this.facultadRepository.delete(facultad);
-        Map<String, Boolean> response = new HashMap();
+        Facultad facultad = facultadRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Facultad no existe con ID: " + id));
+
+        facultadRepository.delete(facultad);
+        Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
-

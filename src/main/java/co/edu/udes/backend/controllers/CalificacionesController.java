@@ -11,39 +11,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = "http://localhost")
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/calificaciones")
+@CrossOrigin(origins = "*")
 public class CalificacionesController {
 
+    private final CalificacionesRepository calificacionesRepository;
+
     @Autowired
-    private CalificacionesRepository calificacionesRepository;
-
-    // get all calificaciones
-    @GetMapping("/calificaciones")
-    public List<Calificaciones> getAllCalificaciones() {
-        return calificacionesRepository.findAll();
+    public CalificacionesController(CalificacionesRepository calificacionesRepository) {
+        this.calificacionesRepository = calificacionesRepository;
     }
 
-    // create calificacion rest api
-    @PostMapping("/calificaciones")
-    public Calificaciones createCalificacion(@RequestBody Calificaciones calificacion) {
-        return calificacionesRepository.save(calificacion);
+    // Obtener todas las calificaciones
+    @GetMapping
+    public ResponseEntity<List<Calificaciones>> getAllCalificaciones() {
+        List<Calificaciones> calificaciones = calificacionesRepository.findAll();
+        return ResponseEntity.ok(calificaciones);
     }
 
-    // get calificacion by id rest api
-    @GetMapping("/calificaciones/{id}")
+    // Crear una nueva calificación
+    @PostMapping
+    public ResponseEntity<Calificaciones> createCalificacion(@RequestBody Calificaciones calificacion) {
+        Calificaciones savedCalificacion = calificacionesRepository.save(calificacion);
+        return ResponseEntity.ok(savedCalificacion);
+    }
+
+    // Obtener calificación por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Calificaciones> getCalificacionById(@PathVariable Long id) {
         Calificaciones calificacion = calificacionesRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con ID: " + id));
         return ResponseEntity.ok(calificacion);
     }
 
-    // update calificacion rest api
-    @PutMapping("/calificaciones/{id}")
+    // Actualizar calificación existente
+    @PutMapping("/{id}")
     public ResponseEntity<Calificaciones> updateCalificacion(@PathVariable Long id, @RequestBody Calificaciones calificacionDetails) {
         Calificaciones calificacion = calificacionesRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con ID: " + id));
 
         calificacion.setP1(calificacionDetails.getP1());
         calificacion.setP2(calificacionDetails.getP2());
@@ -54,11 +60,11 @@ public class CalificacionesController {
         return ResponseEntity.ok(updatedCalificacion);
     }
 
-    // delete calificacion rest api
-    @DeleteMapping("/calificaciones/{id}")
+    // Eliminar calificación
+    @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteCalificacion(@PathVariable Long id) {
         Calificaciones calificacion = calificacionesRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Calificación no existe con ID: " + id));
 
         calificacionesRepository.delete(calificacion);
         Map<String, Boolean> response = new HashMap<>();

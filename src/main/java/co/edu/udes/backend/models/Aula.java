@@ -1,50 +1,31 @@
 package co.edu.udes.backend.models;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+import jakarta.persistence.*;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(
-        name = "aulas"
-)
+@Entity(name = "aulas")
 public class Aula {
+
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(
-            name = "nombre"
-    )
+
+    @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(
-            name = "codigo"
-    )
+
+    @Column(name = "codigo", nullable = false, unique = true)
     private String codigo;
-    @Column(
-            name = "bloque"
-    )
+
+    @Column(name = "bloque", nullable = false)
     private String bloque;
-    @Column(
-            name = "estado"
-    )
+
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
     public Aula() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Aula(long id, String nombre, String codigo, String bloque, boolean estado) {
-        this.id = id;
+    public Aula(String nombre, String codigo, String bloque, boolean estado) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.bloque = bloque;
@@ -52,7 +33,7 @@ public class Aula {
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(long id) {
@@ -60,7 +41,7 @@ public class Aula {
     }
 
     public String getNombre() {
-        return this.nombre;
+        return nombre;
     }
 
     public void setNombre(String nombre) {
@@ -68,7 +49,7 @@ public class Aula {
     }
 
     public String getCodigo() {
-        return this.codigo;
+        return codigo;
     }
 
     public void setCodigo(String codigo) {
@@ -76,7 +57,7 @@ public class Aula {
     }
 
     public String getBloque() {
-        return this.bloque;
+        return bloque;
     }
 
     public void setBloque(String bloque) {
@@ -84,11 +65,10 @@ public class Aula {
     }
 
     public boolean isEstado() {
-        return this.estado;
+        return estado;
     }
 
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
 }
-

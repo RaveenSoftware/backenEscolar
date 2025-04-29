@@ -2,7 +2,6 @@ package co.edu.udes.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity(name = "pensums")
@@ -12,27 +11,25 @@ public class Pensum {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo_pensum")
+    @Column(name = "codigo_pensum", nullable = false, unique = true)
     private String codigoPensum;
 
-    @OneToMany(mappedBy = "pensum" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pensum", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Asignatura> asignaturas;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programa_academico_id")
+    @JoinColumn(name = "programa_academico_id", nullable = false)
     private ProgramaAcademico programaAcademico;
 
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
-
-
     public Pensum() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Pensum(long id, String codigoPensum, List<Asignatura> asignaturas, ProgramaAcademico programaAcademico, boolean estado) {
-        this.id = id;
+    public Pensum(String codigoPensum, List<Asignatura> asignaturas, ProgramaAcademico programaAcademico, boolean estado) {
         this.codigoPensum = codigoPensum;
         this.asignaturas = asignaturas;
         this.programaAcademico = programaAcademico;

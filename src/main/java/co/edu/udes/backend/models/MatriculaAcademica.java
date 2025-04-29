@@ -1,33 +1,27 @@
 package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
-import org.w3c.dom.html.HTMLImageElement;
-
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "matriculas_academicas")
+@Entity(name = "matriculas_academicas")
 public class MatriculaAcademica {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo")
+    @Column(name = "codigo", nullable = false, unique = true)
     private String codigo;
 
-
-    @Column(name = "fecha")
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
-    @OneToOne
-    @JoinColumn(name = "estudiante_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
 
     @ManyToMany
@@ -38,20 +32,19 @@ public class MatriculaAcademica {
     )
     private List<Curso> cursos;
 
-    @Column(name = "semestre_academico")
+    @Column(name = "semestre_academico", nullable = false)
     private String semestre;
 
-    @Column(name = "creditos_actuales")
+    @Column(name = "creditos_actuales", nullable = false)
     private int creditosActuales;
 
-
     public MatriculaAcademica() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public MatriculaAcademica(long id, String codigo, LocalDate fecha, boolean estado,
-                              Estudiante estudiante, List<Curso> cursos, String semestre,
-                              int creditosActuales) {
-        this.id = id;
+    public MatriculaAcademica(String codigo, LocalDate fecha, boolean estado,
+                              Estudiante estudiante, List<Curso> cursos,
+                              String semestre, int creditosActuales) {
         this.codigo = codigo;
         this.fecha = fecha;
         this.estado = estado;
@@ -72,7 +65,7 @@ public class MatriculaAcademica {
     public String getCodigo() {
         return codigo;
     }
-    //
+
     public void setCodigo(String codigo) {
         this.codigo = codigo;
     }

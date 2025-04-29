@@ -6,38 +6,28 @@ import java.time.LocalDate;
 @Entity(name = "administradores")
 public class Administrador extends Persona {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
     @ManyToOne
-    @JoinColumn(name = "facultad_id")
+    @JoinColumn(name = "facultad_id", nullable = false)
     private Facultad facultad;
 
-    @Column(name = "codigo_institucional")
+    @Column(name = "codigo_institucional", nullable = false, unique = true)
     private String codigoInstitucional;
 
-    @Column(name = "correo_institucional")
+    @Column(name = "correo_institucional", nullable = false, unique = true)
     private String correoInstitucional;
 
     public Administrador() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Administrador(long id, String nombre, String telefono, String correoPersonal, LocalDate fechaNacimiento, String numeroDocumento, boolean estado, long id1, Facultad facultad, String codigoInstitucional, String correoInstitucional) {
-        super();
-        this.id = id;
+    public Administrador(String nombre, String telefono, String correoPersonal,
+                         LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
+                         TipoDocumento tipoDocumento, TipoGenero genero,
+                         Facultad facultad, String codigoInstitucional, String correoInstitucional) {
+        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
         this.facultad = facultad;
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Facultad getFacultad() {

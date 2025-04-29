@@ -1,55 +1,49 @@
 package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity(name = "personas")
 @Inheritance(strategy = InheritanceType.JOINED)
-
 public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "telefono")
+    @Column(name = "telefono", nullable = false)
     private String telefono;
 
-    @Column(name = "correo_Personal")
+    @Column(name = "correo_personal", nullable = false, unique = true)
     private String correoPersonal;
 
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    @Column(name = "numero_documento")
+    @Column(name = "numero_documento", nullable = false, unique = true)
     private String numeroDocumento;
 
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
-    @ManyToOne
-    @JoinColumn(
-            name = "tipo_documento_id"
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_documento_id", nullable = false)
     private TipoDocumento tipoDocumento;
-    @ManyToOne
-    @JoinColumn(
-            name = "tipo_genero_id"
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_genero_id", nullable = false)
     private TipoGenero genero;
 
-
     public Persona() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Persona(long id, String nombre, String telefono, String correoPersonal, LocalDate fechaNacimiento,
-                   String numeroDocumento, boolean estado, TipoDocumento tipoDocumento, TipoGenero genero) {
-        this.id = id;
+    public Persona(String nombre, String telefono, String correoPersonal,
+                   LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
+                   TipoDocumento tipoDocumento, TipoGenero genero) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.correoPersonal = correoPersonal;
@@ -60,60 +54,12 @@ public class Persona {
         this.genero = genero;
     }
 
-    public TipoGenero getGenero() {
-        return genero;
+    public long getId() {
+        return id;
     }
 
-    public void setGenero(TipoGenero genero) {
-        this.genero = genero;
-    }
-
-    public TipoDocumento getTipoDocumento() {
-        return tipoDocumento;
-    }
-
-    public void setTipoDocumento(TipoDocumento tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-    }
-
-    public boolean isEstado() {
-        return estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
-
-    public String getNumeroDocumento() {
-        return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public String getCorreoPersonal() {
-        return correoPersonal;
-    }
-
-    public void setCorreoPersonal(String correoPersonal) {
-        this.correoPersonal = correoPersonal;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -124,11 +70,59 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public long getId() {
-        return id;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreoPersonal() {
+        return correoPersonal;
+    }
+
+    public void setCorreoPersonal(String correoPersonal) {
+        this.correoPersonal = correoPersonal;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
+
+    public TipoDocumento getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(TipoDocumento tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public TipoGenero getGenero() {
+        return genero;
+    }
+
+    public void setGenero(TipoGenero genero) {
+        this.genero = genero;
     }
 }

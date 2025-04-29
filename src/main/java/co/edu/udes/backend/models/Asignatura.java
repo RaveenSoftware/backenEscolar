@@ -2,7 +2,6 @@ package co.edu.udes.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity(name = "asignaturas")
 public class Asignatura {
@@ -11,34 +10,33 @@ public class Asignatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo")
+    @Column(name = "codigo", nullable = false, unique = true)
     private String codigo;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "predecesora_id")
     private Asignatura predecesora;
 
-    @Column(name = "numero_semestre")
-    private String numeroSemestre;
+    @Column(name = "numero_semestre", nullable = false)
+    private int numeroSemestre;
 
-    @Column(name = "numero_creditos")
-    private String numeroCreditos;
+    @Column(name = "numero_creditos", nullable = false)
+    private int numeroCreditos;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pensum_id")
+    @JoinColumn(name = "pensum_id", nullable = false)
     @JsonBackReference
     private Pensum pensum;
 
-
     public Asignatura() {
+        // Constructor por defecto requerido por JPA
     }
 
-
-    public Asignatura(long id, String codigo, String nombre, Asignatura predecesora, String numeroSemestre, String numeroCreditos, Pensum pensum) {
-        this.id = id;
+    public Asignatura(String codigo, String nombre, Asignatura predecesora,
+                      int numeroSemestre, int numeroCreditos, Pensum pensum) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.predecesora = predecesora;
@@ -79,19 +77,19 @@ public class Asignatura {
         this.predecesora = predecesora;
     }
 
-    public String getNumeroSemestre() {
+    public int getNumeroSemestre() {
         return numeroSemestre;
     }
 
-    public void setNumeroSemestre(String numeroSemestre) {
+    public void setNumeroSemestre(int numeroSemestre) {
         this.numeroSemestre = numeroSemestre;
     }
 
-    public String getNumeroCreditos() {
+    public int getNumeroCreditos() {
         return numeroCreditos;
     }
 
-    public void setNumeroCreditos(String numeroCreditos) {
+    public void setNumeroCreditos(int numeroCreditos) {
         this.numeroCreditos = numeroCreditos;
     }
 

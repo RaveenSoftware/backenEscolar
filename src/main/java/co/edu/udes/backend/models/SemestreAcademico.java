@@ -1,11 +1,6 @@
 package co.edu.udes.backend.models;
 
-import co.edu.udes.backend.models.Curso;
-import co.edu.udes.backend.models.Poligrafo;
 import jakarta.persistence.*;
-
-import java.time.Year;
-import java.util.List;
 
 @Entity(name = "semestres_academicos")
 public class SemestreAcademico {
@@ -15,7 +10,7 @@ public class SemestreAcademico {
     private long id;
 
     @Column(name = "year")
-    private Year year;
+    private int year; // Antes: java.time.Year
 
     @Column(name = "periodo_academico")
     private String periodoAcademico;
@@ -23,11 +18,10 @@ public class SemestreAcademico {
     @Column(name = "descripcion")
     private String descripcion;
 
-
     public SemestreAcademico() {
     }
 
-    public SemestreAcademico(long id, Year year, String periodoAcademico, String descripcion) {
+    public SemestreAcademico(long id, int year, String periodoAcademico, String descripcion) {
         this.id = id;
         this.year = year;
         this.periodoAcademico = periodoAcademico;
@@ -42,11 +36,11 @@ public class SemestreAcademico {
         this.id = id;
     }
 
-    public Year getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(Year year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
@@ -65,5 +59,4 @@ public class SemestreAcademico {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
 }

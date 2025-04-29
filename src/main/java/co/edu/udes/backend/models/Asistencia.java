@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-
 @Entity(name = "asistencias")
-
 public class Asistencia {
 
     @Id
@@ -14,27 +12,27 @@ public class Asistencia {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estudiante_id")
+    @JoinColumn(name = "estudiante_id", nullable = false)
     @JsonBackReference
     private Estudiante estudiante;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "curso_id")
+    @JoinColumn(name = "curso_id", nullable = false)
     @JsonBackReference
     private Curso curso;
 
-    @Column(name = "fecha")
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private EstadoAsistencia estado;
 
     public Asistencia() {
+        // Constructor por defecto requerido por JPA
     }
 
-    public Asistencia(long id, Estudiante estudiante, Curso curso, LocalDate fecha, EstadoAsistencia estado) {
-        this.id = id;
+    public Asistencia(Estudiante estudiante, Curso curso, LocalDate fecha, EstadoAsistencia estado) {
         this.estudiante = estudiante;
         this.curso = curso;
         this.fecha = fecha;
