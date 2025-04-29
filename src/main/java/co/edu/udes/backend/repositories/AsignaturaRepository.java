@@ -5,8 +5,14 @@ import co.edu.udes.backend.models.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
+import java.util.List;
 
+//@Repository
+//public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
+
+
+    @Repository
+    public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
+        List<Asignatura> findByPensumId(Long pensumId);
 
 }

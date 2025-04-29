@@ -12,44 +12,38 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/estudiantes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"*"})
+@RequestMapping("/api/v1/")
 public class EstudianteController {
 
-    private final EstudianteRepository estudianteRepository;
-
     @Autowired
-    public EstudianteController(EstudianteRepository estudianteRepository) {
-        this.estudianteRepository = estudianteRepository;
+    private EstudianteRepository estudianteRepository;
+
+    // Get all estudiantes
+    @GetMapping("/estudiantes")
+    public List<Estudiante> getAllEstudiantes() {
+        return estudianteRepository.findAll();
     }
 
-    // Obtener todos los estudiantes
-    @GetMapping
-    public ResponseEntity<List<Estudiante>> getAllEstudiantes() {
-        List<Estudiante> estudiantes = estudianteRepository.findAll();
-        return ResponseEntity.ok(estudiantes);
+    // Create estudiante rest api
+    @PostMapping("/estudiantes")
+    public Estudiante createEstudiante(@RequestBody Estudiante estudiante) {
+        return estudianteRepository.save(estudiante);
     }
 
-    // Crear un nuevo estudiante
-    @PostMapping
-    public ResponseEntity<Estudiante> createEstudiante(@RequestBody Estudiante estudiante) {
-        Estudiante savedEstudiante = estudianteRepository.save(estudiante);
-        return ResponseEntity.ok(savedEstudiante);
-    }
-
-    // Obtener estudiante por ID
-    @GetMapping("/{id}")
+    // Get estudiante by id rest api
+    @GetMapping("/estudiantes/{id}")
     public ResponseEntity<Estudiante> getEstudianteById(@PathVariable Long id) {
         Estudiante estudiante = estudianteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no existe con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante not exist with id :" + id));
         return ResponseEntity.ok(estudiante);
     }
 
-    // Actualizar un estudiante existente
-    @PutMapping("/{id}")
+    // Update estudiante rest api
+    @PutMapping("/estudiantes/{id}")
     public ResponseEntity<Estudiante> updateEstudiante(@PathVariable Long id, @RequestBody Estudiante estudianteDetails) {
         Estudiante estudiante = estudianteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no existe con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante not exist with id :" + id));
 
         estudiante.setCodigoInstitucional(estudianteDetails.getCodigoInstitucional());
         estudiante.setPrograma(estudianteDetails.getPrograma());
@@ -59,11 +53,11 @@ public class EstudianteController {
         return ResponseEntity.ok(updatedEstudiante);
     }
 
-    // Eliminar estudiante
-    @DeleteMapping("/{id}")
+    // Delete estudiante rest api
+    @DeleteMapping("/estudiantes/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteEstudiante(@PathVariable Long id) {
         Estudiante estudiante = estudianteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estudiante no existe con ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Estudiante not exist with id :" + id));
 
         estudianteRepository.delete(estudiante);
         Map<String, Boolean> response = new HashMap<>();

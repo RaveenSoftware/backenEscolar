@@ -1,31 +1,46 @@
 package co.edu.udes.backend.models;
 
-import jakarta.persistence.*;
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
 
-@Entity(name = "tipos_generos")
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity(
+        name = "tipos_generos"
+)
 public class TipoGenero {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private long id;
-
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(
+            name = "nombre"
+    )
     private String nombre;
-
-    @Column(name = "estado", nullable = false)
+    @Column(
+            name = "estado"
+    )
     private boolean estado;
 
     public TipoGenero() {
-        // Constructor por defecto requerido por JPA
     }
 
-    public TipoGenero(String nombre, boolean estado) {
+    public TipoGenero(long id, String nombre, String descripcion) {
+        this.id = id;
         this.nombre = nombre;
-        this.estado = estado;
+        this.estado = this.estado;
     }
 
     public long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(long id) {
@@ -33,7 +48,7 @@ public class TipoGenero {
     }
 
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
 
     public void setNombre(String nombre) {
@@ -41,7 +56,7 @@ public class TipoGenero {
     }
 
     public boolean isEstado() {
-        return estado;
+        return this.estado;
     }
 
     public void setEstado(boolean estado) {

@@ -1,56 +1,59 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package co.edu.udes.backend.controllers;
 
 import co.edu.udes.backend.models.Docente;
 import co.edu.udes.backend.repositories.DocenteRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/docentes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(
+        origins = {"*"}
+)
+@RequestMapping({"/api/v1/"})
 public class DocenteController {
-
-    private final DocenteRepository docenteRepository;
-
     @Autowired
-    public DocenteController(DocenteRepository docenteRepository) {
-        this.docenteRepository = docenteRepository;
+    private DocenteRepository docenteRepository;
+
+    public DocenteController() {
     }
 
-    // Obtener todos los docentes
-    @GetMapping
-    public ResponseEntity<List<Docente>> getAllDocentes() {
-        List<Docente> docentes = docenteRepository.findAll();
-        return ResponseEntity.ok(docentes);
+    @GetMapping({"/docentes"})
+    public List<Docente> getAllDocentes() {
+        return this.docenteRepository.findAll();
     }
 
-    // Crear un nuevo docente
-    @PostMapping
-    public ResponseEntity<Docente> createDocente(@RequestBody Docente docente) {
-        Docente savedDocente = docenteRepository.save(docente);
-        return ResponseEntity.ok(savedDocente);
+    @PostMapping({"/docentes"})
+    public Docente createDocente(@RequestBody Docente docente) {
+        return (Docente)this.docenteRepository.save(docente);
     }
 
-    // Obtener docente por ID
-    @GetMapping("/{id}")
+    @GetMapping({"/docentes/{id}"})
     public ResponseEntity<Docente> getDocenteById(@PathVariable Long id) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
+        Docente docente = (Docente)this.docenteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Docente not exist with id :" + id));
         return ResponseEntity.ok(docente);
     }
 
-    // Actualizar un docente existente
-    @PutMapping("/{id}")
+    @PutMapping({"/docentes/{id}"})
     public ResponseEntity<Docente> updateDocente(@PathVariable Long id, @RequestBody Docente docenteDetails) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
-
+        Docente docente = (Docente)this.docenteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Docente not exist with id :" + id));
         docente.setNombre(docenteDetails.getNombre());
         docente.setTelefono(docenteDetails.getTelefono());
         docente.setCorreoPersonal(docenteDetails.getCorreoPersonal());
@@ -63,19 +66,15 @@ public class DocenteController {
         docente.setEspecialidad(docenteDetails.getEspecialidad());
         docente.setCodigoInstitucional(docenteDetails.getCodigoInstitucional());
         docente.setCorreoInstitucional(docenteDetails.getCorreoInstitucional());
-
-        Docente updatedDocente = docenteRepository.save(docente);
+        Docente updatedDocente = (Docente)this.docenteRepository.save(docente);
         return ResponseEntity.ok(updatedDocente);
     }
 
-    // Eliminar docente
-    @DeleteMapping("/{id}")
+    @DeleteMapping({"/docentes/{id}"})
     public ResponseEntity<Map<String, Boolean>> deleteDocente(@PathVariable Long id) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
-
-        docenteRepository.delete(docente);
-        Map<String, Boolean> response = new HashMap<>();
+        Docente docente = (Docente)this.docenteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Docente not exist with id :" + id));
+        this.docenteRepository.delete(docente);
+        Map<String, Boolean> response = new HashMap();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }

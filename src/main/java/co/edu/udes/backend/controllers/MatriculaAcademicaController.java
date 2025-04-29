@@ -11,65 +11,62 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//@CrossOrigin(origins = "http://localhost")
 @RestController
-@RequestMapping("/api/v1/matriculas-academicas")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"*"})
+@RequestMapping("/api/v1/")
 public class MatriculaAcademicaController {
 
-    private final MatriculaAcademicaRepository matriculaAcademicaRepository;
-
     @Autowired
-    public MatriculaAcademicaController(MatriculaAcademicaRepository matriculaAcademicaRepository) {
-        this.matriculaAcademicaRepository = matriculaAcademicaRepository;
+    private MatriculaAcademicaRepository matriculaAcademicaRepository;
+
+    // get all matriculaAcademicas
+    @GetMapping("/matriculaAcademicas")
+    public List<MatriculaAcademica> getAllMatriculaAcademicas(){
+        return matriculaAcademicaRepository.findAll();
     }
 
-    // Obtener todas las matrículas académicas
-    @GetMapping
-    public ResponseEntity<List<MatriculaAcademica>> getAllMatriculaAcademicas() {
-        List<MatriculaAcademica> lista = matriculaAcademicaRepository.findAll();
-        return ResponseEntity.ok(lista);
+    // create matriculaAcademica rest api
+    @PostMapping("/matriculaAcademicas")
+    public MatriculaAcademica createMatriculaAcademica(@RequestBody MatriculaAcademica matriculaAcademica) {
+        return matriculaAcademicaRepository.save(matriculaAcademica);
     }
 
-    // Crear una nueva matrícula académica
-    @PostMapping
-    public ResponseEntity<MatriculaAcademica> createMatriculaAcademica(@RequestBody MatriculaAcademica matriculaAcademica) {
-        MatriculaAcademica saved = matriculaAcademicaRepository.save(matriculaAcademica);
-        return ResponseEntity.ok(saved);
-    }
-
-    // Obtener matrícula académica por ID
-    @GetMapping("/{id}")
+    // get matriculaAcademica by id rest api
+    @GetMapping("/matriculaAcademicas/{id}")
     public ResponseEntity<MatriculaAcademica> getMatriculaAcademicaById(@PathVariable Long id) {
-        MatriculaAcademica matricula = matriculaAcademicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La matrícula académica no existe con ID: " + id));
-        return ResponseEntity.ok(matricula);
+        MatriculaAcademica matriculaAcademica = matriculaAcademicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MatriculaAcademica not exist with id :" + id));
+        return ResponseEntity.ok(matriculaAcademica);
     }
 
-    // Actualizar matrícula académica existente
-    @PutMapping("/{id}")
-    public ResponseEntity<MatriculaAcademica> updateMatriculaAcademica(@PathVariable Long id, @RequestBody MatriculaAcademica details) {
-        MatriculaAcademica matricula = matriculaAcademicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La matrícula académica no existe con ID: " + id));
+    // update matriculaAcademica rest api
 
-        matricula.setCodigo(details.getCodigo());
-        matricula.setFecha(details.getFecha());
-        matricula.setEstado(details.isEstado());
-        matricula.setEstudiante(details.getEstudiante());
-        matricula.setCursos(details.getCursos());
-        matricula.setSemestre(details.getSemestre());
-        matricula.setCreditosActuales(details.getCreditosActuales());
+    @PutMapping("/matriculaAcademicas/{id}")
+    public ResponseEntity<MatriculaAcademica> updateMatriculaAcademica(@PathVariable Long id, @RequestBody MatriculaAcademica matriculaAcademicaDetails){
+        MatriculaAcademica matriculaAcademica = matriculaAcademicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MatriculaAcademica not exist with id :" + id));
 
-        MatriculaAcademica updated = matriculaAcademicaRepository.save(matricula);
-        return ResponseEntity.ok(updated);
+        matriculaAcademica.setCodigo(matriculaAcademicaDetails.getCodigo());
+        matriculaAcademica.setFecha(matriculaAcademicaDetails.getFecha());
+        matriculaAcademica.setEstado(matriculaAcademicaDetails.isEstado());
+        matriculaAcademica.setEstudiante(matriculaAcademicaDetails.getEstudiante());
+        matriculaAcademica.setCursos(matriculaAcademicaDetails.getCursos());
+        matriculaAcademica.setSemestre(matriculaAcademicaDetails.getSemestre());
+        matriculaAcademica.setCreditosActuales(matriculaAcademicaDetails.getCreditosActuales());
+
+
+        MatriculaAcademica updatedMatriculaAcademica = matriculaAcademicaRepository.save(matriculaAcademica);
+        return ResponseEntity.ok(updatedMatriculaAcademica);
     }
 
-    // Eliminar matrícula académica
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteMatriculaAcademica(@PathVariable Long id) {
-        MatriculaAcademica matricula = matriculaAcademicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La matrícula académica no existe con ID: " + id));
+    // delete matriculaAcademica rest api
+    @DeleteMapping("/matriculaAcademicas/{id}")
+    public ResponseEntity<Map<String, Boolean>> deleteMatriculaAcademica(@PathVariable Long id){
+        MatriculaAcademica matriculaAcademica = matriculaAcademicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MatriculaAcademica not exist with id :" + id));
 
-        matriculaAcademicaRepository.delete(matricula);
+        matriculaAcademicaRepository.delete(matriculaAcademica);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
