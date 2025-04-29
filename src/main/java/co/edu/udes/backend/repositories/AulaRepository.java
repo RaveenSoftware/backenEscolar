@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface AulaRepository extends JpaRepository<Aula, Long> {
 
 
+
 }

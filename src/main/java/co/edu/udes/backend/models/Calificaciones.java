@@ -22,15 +22,19 @@ public class Calificaciones {
     @JoinColumn(name = "curso_id", nullable = false)
     private Curso curso;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estudiante_id", nullable = false)
+    private Estudiante estudiante;
+
     public Calificaciones() {
-        // Constructor por defecto requerido por JPA
     }
 
-    public Calificaciones(double p1, double p2, double definitiva, Curso curso) {
+    public Calificaciones(double p1, double p2, double definitiva, Curso curso, Estudiante estudiante) {
         this.p1 = p1;
         this.p2 = p2;
         this.definitiva = definitiva;
         this.curso = curso;
+        this.estudiante = estudiante;
     }
 
     public long getId() {
@@ -71,5 +75,13 @@ public class Calificaciones {
 
     public void setCurso(Curso curso) {
         this.curso = curso;
+    }
+
+    public Estudiante getEstudiante() {
+        return estudiante;
+    }
+
+    public void setEstudiante(Estudiante estudiante) {
+        this.estudiante = estudiante;
     }
 }
