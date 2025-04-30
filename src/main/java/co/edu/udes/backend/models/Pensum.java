@@ -1,7 +1,8 @@
 package co.edu.udes.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity(name = "pensums")
@@ -11,25 +12,25 @@ public class Pensum {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo_pensum", nullable = false, unique = true)
+    @Column(name = "codigo_pensum")
     private String codigoPensum;
 
-    @OneToMany(mappedBy = "pensum", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "pensum", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("pensum") // Evita ciclos infinitos
     private List<Asignatura> asignaturas;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programa_academico_id", nullable = false)
+    @JoinColumn(name = "programa_academico_id")
     private ProgramaAcademico programaAcademico;
 
-    @Column(name = "estado", nullable = false)
+    @Column(name = "estado")
     private boolean estado;
 
     public Pensum() {
-        // Constructor por defecto requerido por JPA
     }
 
-    public Pensum(String codigoPensum, List<Asignatura> asignaturas, ProgramaAcademico programaAcademico, boolean estado) {
+    public Pensum(long id, String codigoPensum, List<Asignatura> asignaturas, ProgramaAcademico programaAcademico, boolean estado) {
+        this.id = id;
         this.codigoPensum = codigoPensum;
         this.asignaturas = asignaturas;
         this.programaAcademico = programaAcademico;

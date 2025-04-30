@@ -1,6 +1,7 @@
 package co.edu.udes.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity(name = "asignaturas")
@@ -10,39 +11,39 @@ public class Asignatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo", nullable = false, unique = true)
+    @Column(name = "codigo")
     private String codigo;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre")
     private String nombre;
+
+    @Column(name = "numero_creditos")
+    private int numeroCreditos;
+
+    @Column(name = "numero_semestre")
+    private int numeroSemestre;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pensum_id")
+    @JsonBackReference // Evita recursión con pensum.getAsignaturas()
+    private Pensum pensum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "predecesora_id")
+    @JsonIgnoreProperties({"pensum", "predecesora"}) // Previene ciclos infinitos en autoreferencia
     private Asignatura predecesora;
 
-    @Column(name = "numero_semestre", nullable = false)
-    private int numeroSemestre;
-
-    @Column(name = "numero_creditos", nullable = false)
-    private int numeroCreditos;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pensum_id", nullable = false)
-    @JsonBackReference
-    private Pensum pensum;
-
     public Asignatura() {
-        // Constructor por defecto requerido por JPA
     }
 
-    public Asignatura(String codigo, String nombre, Asignatura predecesora,
-                      int numeroSemestre, int numeroCreditos, Pensum pensum) {
+    public Asignatura(long id, String codigo, String nombre, int numeroCreditos, int numeroSemestre, Pensum pensum, Asignatura predecesora) {
+        this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
-        this.predecesora = predecesora;
-        this.numeroSemestre = numeroSemestre;
         this.numeroCreditos = numeroCreditos;
+        this.numeroSemestre = numeroSemestre;
         this.pensum = pensum;
+        this.predecesora = predecesora;
     }
 
     public long getId() {
@@ -69,12 +70,12 @@ public class Asignatura {
         this.nombre = nombre;
     }
 
-    public Asignatura getPredecesora() {
-        return predecesora;
+    public int getNumeroCreditos() {
+        return numeroCreditos;
     }
 
-    public void setPredecesora(Asignatura predecesora) {
-        this.predecesora = predecesora;
+    public void setNumeroCreditos(int numeroCreditos) {
+        this.numeroCreditos = numeroCreditos;
     }
 
     public int getNumeroSemestre() {
@@ -85,19 +86,19 @@ public class Asignatura {
         this.numeroSemestre = numeroSemestre;
     }
 
-    public int getNumeroCreditos() {
-        return numeroCreditos;
-    }
-
-    public void setNumeroCreditos(int numeroCreditos) {
-        this.numeroCreditos = numeroCreditos;
-    }
-
     public Pensum getPensum() {
         return pensum;
     }
 
     public void setPensum(Pensum pensum) {
         this.pensum = pensum;
+    }
+
+    public Asignatura getPredecesora() {
+        return predecesora;
+    }
+
+    public void setPredecesora(Asignatura predecesora) {
+        this.predecesora = predecesora;
     }
 }
