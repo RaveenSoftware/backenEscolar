@@ -2,6 +2,7 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.time.Duration;
 
 @Entity(name = "horarios")
 public class Horario {
@@ -23,7 +24,6 @@ public class Horario {
     private boolean estado;
 
     public Horario() {
-        // Constructor por defecto requerido por JPA
     }
 
     public Horario(LocalTime horaInicio, LocalTime horaFinalizacion, String dia, boolean estado) {
@@ -71,5 +71,10 @@ public class Horario {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+    // Método para calcular la duración en horas del horario
+    public int getDuracionHoras() {
+        return (int) Duration.between(horaInicio, horaFinalizacion).toHours();
     }
 }

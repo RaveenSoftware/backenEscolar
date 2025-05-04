@@ -2,7 +2,7 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "docentes")
@@ -27,11 +27,17 @@ public class Docente extends Persona {
             joinColumns = @JoinColumn(name = "docente_id"),
             inverseJoinColumns = @JoinColumn(name = "curso_id")
     )
-    private Set<Curso> cursos = new HashSet<>();
+    private Set<Curso> cursos;
 
-    public Docente() {
-        // Constructor por defecto requerido por JPA
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "disponibilidad_docente",
+            joinColumns = @JoinColumn(name = "docente_id"),
+            inverseJoinColumns = @JoinColumn(name = "horario_id")
+    )
+    private List<Horario> disponibilidadHoraria;
+
+    public Docente() {}
 
     public Docente(String nombre, String telefono, String correoPersonal,
                    LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
@@ -44,6 +50,8 @@ public class Docente extends Persona {
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;
     }
+
+    // Getters y Setters
 
     public Facultad getFacultad() {
         return facultad;
@@ -83,5 +91,13 @@ public class Docente extends Persona {
 
     public void setCursos(Set<Curso> cursos) {
         this.cursos = cursos;
+    }
+
+    public List<Horario> getDisponibilidadHoraria() {
+        return disponibilidadHoraria;
+    }
+
+    public void setDisponibilidadHoraria(List<Horario> disponibilidadHoraria) {
+        this.disponibilidadHoraria = disponibilidadHoraria;
     }
 }

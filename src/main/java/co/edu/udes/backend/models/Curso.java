@@ -2,74 +2,54 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity(name = "cursos")
 public class Curso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "docente_id")
-    private Docente docente;
-
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "grupo")
-    private String grupo;
+    @Column(name = "codigo", nullable = false, unique = true)
+    private String codigo;
 
-    @ManyToOne
-    @JoinColumn(name = "asignatura_id")
-    private Asignatura asignatura;
-
-    @OneToMany(mappedBy = "curso", fetch = FetchType.LAZY)
-    private List<AulaHorario> aulaHorarios;
-
-    @ManyToOne
-    @JoinColumn(name = "semestre_academico_id")
-    private SemestreAcademico semestreAcademico;
+    @Column(name = "creditos", nullable = false)
+    private int creditos;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programa_academico_id")
-    private ProgramaAcademico programaAcademico;
+    @JoinColumn(name = "programa_id", nullable = false)
+    private ProgramaAcademico programa;
 
-    @ManyToMany
-    private List<MatriculaAcademica> matriculaAcademica;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asignatura_id", nullable = false)
+    private Asignatura asignatura;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
 
     public Curso() {
+        // Constructor vacío requerido por JPA
     }
 
-    public Curso(long id, Docente docente, String nombre, String grupo, Asignatura asignatura,
-                 List<AulaHorario> aulaHorarios, SemestreAcademico semestreAcademico,
-                 ProgramaAcademico programaAcademico, List<MatriculaAcademica> matriculaAcademica) {
-        this.id = id;
-        this.docente = docente;
+    public Curso(String nombre, String codigo, int creditos, ProgramaAcademico programa,
+                 Asignatura asignatura, Horario horario) {
         this.nombre = nombre;
-        this.grupo = grupo;
+        this.codigo = codigo;
+        this.creditos = creditos;
+        this.programa = programa;
         this.asignatura = asignatura;
-        this.aulaHorarios = aulaHorarios;
-        this.semestreAcademico = semestreAcademico;
-        this.programaAcademico = programaAcademico;
-        this.matriculaAcademica = matriculaAcademica;
+        this.horario = horario;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public Docente getDocente() {
-        return docente;
-    }
-
-    public void setDocente(Docente docente) {
-        this.docente = docente;
     }
 
     public String getNombre() {
@@ -80,12 +60,28 @@ public class Curso {
         this.nombre = nombre;
     }
 
-    public String getGrupo() {
-        return grupo;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setGrupo(String grupo) {
-        this.grupo = grupo;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public int getCreditos() {
+        return creditos;
+    }
+
+    public void setCreditos(int creditos) {
+        this.creditos = creditos;
+    }
+
+    public ProgramaAcademico getPrograma() {
+        return programa;
+    }
+
+    public void setPrograma(ProgramaAcademico programa) {
+        this.programa = programa;
     }
 
     public Asignatura getAsignatura() {
@@ -96,35 +92,11 @@ public class Curso {
         this.asignatura = asignatura;
     }
 
-    public List<AulaHorario> getAulaHorarios() {
-        return aulaHorarios;
+    public Horario getHorario() {
+        return horario;
     }
 
-    public void setAulaHorarios(List<AulaHorario> aulaHorarios) {
-        this.aulaHorarios = aulaHorarios;
-    }
-
-    public SemestreAcademico getSemestreAcademico() {
-        return semestreAcademico;
-    }
-
-    public void setSemestreAcademico(SemestreAcademico semestreAcademico) {
-        this.semestreAcademico = semestreAcademico;
-    }
-
-    public ProgramaAcademico getProgramaAcademico() {
-        return programaAcademico;
-    }
-
-    public void setProgramaAcademico(ProgramaAcademico programaAcademico) {
-        this.programaAcademico = programaAcademico;
-    }
-
-    public List<MatriculaAcademica> getMatriculaAcademica() {
-        return matriculaAcademica;
-    }
-
-    public void setMatriculaAcademica(List<MatriculaAcademica> matriculaAcademica) {
-        this.matriculaAcademica = matriculaAcademica;
+    public void setHorario(Horario horario) {
+        this.horario = horario;
     }
 }
