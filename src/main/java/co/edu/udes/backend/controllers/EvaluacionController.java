@@ -1,57 +1,53 @@
 package co.edu.udes.backend.controllers;
 
 import co.edu.udes.backend.models.Evaluacion;
-import co.edu.udes.backend.repositories.EvaluacionRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.services.EvaluacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/evaluaciones")
 @CrossOrigin(origins = "*")
 public class EvaluacionController {
 
-    private final EvaluacionRepository evaluacionRepository;
-
     @Autowired
-    public EvaluacionController(EvaluacionRepository evaluacionRepository) {
-        this.evaluacionRepository = evaluacionRepository;
+    private EvaluacionService evaluacionService;
+
+    // Crear evaluación
+    @PostMapping
+    public ResponseEntity<Evaluacion> crearEvaluacion(@RequestBody Evaluacion evaluacion) {
+        Evaluacion nueva = evaluacionService.crearEvaluacion(evaluacion);
+        return ResponseEntity.ok(nueva);
     }
 
     // Obtener todas las evaluaciones
     @GetMapping
     public ResponseEntity<List<Evaluacion>> getAll() {
-        List<Evaluacion> evaluaciones = evaluacionRepository.findAll();
-        return ResponseEntity.ok(evaluaciones);
+        return ResponseEntity.ok(evaluacionService.listarEvaluaciones());
     }
 
-    // Crear una nueva evaluación
-    @PostMapping
-    public ResponseEntity<Evaluacion> create(@RequestBody Evaluacion evaluacion) {
-        Evaluacion savedEvaluacion = evaluacionRepository.save(evaluacion);
-        return ResponseEntity.ok(savedEvaluacion);
-    }
-
-    // Obtener evaluación por ID
+    // Obtener una evaluación por ID
     @GetMapping("/{id}")
     public ResponseEntity<Evaluacion> getById(@PathVariable Long id) {
-        Evaluacion evaluacion = evaluacionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Evaluación no existe con ID: " + id));
-        return ResponseEntity.ok(evaluacion);
+        return ResponseEntity.ok(evaluacionService.obtenerPorId(id));
     }
 
-    // Eliminar evaluación por ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> delete(@PathVariable Long id) {
-        Evaluacion evaluacion = evaluacionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Evaluación no existe con ID: " + id));
-        evaluacionRepository.delete(evaluacion);
+    // Actualizar evaluación
+    @PutMapping("/{id}")
+    public ResponseEntity<Evaluacion> actualizar(@PathVariable Long id, @RequestBody Evaluacion evaluacion) {
+        Evaluacion actualizada = evaluacionService.actualizarEvaluacion(id, evaluacion);
+        return ResponseEntity.ok(actualizada);
+    }
 
+    // Eliminar evaluación
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Boolean>> eliminar(@PathVariable Long id) {
+        evaluacionService.eliminarEvaluacion(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);

@@ -2,6 +2,8 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "docentes")
 public class Docente extends Persona {
@@ -18,6 +20,14 @@ public class Docente extends Persona {
 
     @Column(name = "correo_institucional", nullable = false, unique = true)
     private String correoInstitucional;
+
+    @ManyToMany
+    @JoinTable(
+            name = "docente_cursos",
+            joinColumns = @JoinColumn(name = "docente_id"),
+            inverseJoinColumns = @JoinColumn(name = "curso_id")
+    )
+    private Set<Curso> cursos = new HashSet<>();
 
     public Docente() {
         // Constructor por defecto requerido por JPA
@@ -65,5 +75,13 @@ public class Docente extends Persona {
 
     public void setCorreoInstitucional(String correoInstitucional) {
         this.correoInstitucional = correoInstitucional;
+    }
+
+    public Set<Curso> getCursos() {
+        return cursos;
+    }
+
+    public void setCursos(Set<Curso> cursos) {
+        this.cursos = cursos;
     }
 }

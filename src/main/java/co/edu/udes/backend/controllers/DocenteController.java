@@ -1,80 +1,53 @@
 package co.edu.udes.backend.controllers;
 
 import co.edu.udes.backend.models.Docente;
-import co.edu.udes.backend.repositories.DocenteRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.services.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/docentes")
 @CrossOrigin(origins = "*")
 public class DocenteController {
 
-    private final DocenteRepository docenteRepository;
-
     @Autowired
-    public DocenteController(DocenteRepository docenteRepository) {
-        this.docenteRepository = docenteRepository;
+    private DocenteService docenteService;
+
+    // Crear docente
+    @PostMapping
+    public ResponseEntity<Docente> crearDocente(@RequestBody Docente docente) {
+        Docente nuevo = docenteService.crearDocente(docente);
+        return ResponseEntity.ok(nuevo);
     }
 
     // Obtener todos los docentes
     @GetMapping
-    public ResponseEntity<List<Docente>> getAllDocentes() {
-        List<Docente> docentes = docenteRepository.findAll();
-        return ResponseEntity.ok(docentes);
-    }
-
-    // Crear un nuevo docente
-    @PostMapping
-    public ResponseEntity<Docente> createDocente(@RequestBody Docente docente) {
-        Docente savedDocente = docenteRepository.save(docente);
-        return ResponseEntity.ok(savedDocente);
+    public ResponseEntity<List<Docente>> obtenerTodos() {
+        return ResponseEntity.ok(docenteService.obtenerTodos());
     }
 
     // Obtener docente por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Docente> getDocenteById(@PathVariable Long id) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
-        return ResponseEntity.ok(docente);
+    public ResponseEntity<Docente> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(docenteService.obtenerPorId(id));
     }
 
-    // Actualizar un docente existente
+    // Actualizar docente
     @PutMapping("/{id}")
-    public ResponseEntity<Docente> updateDocente(@PathVariable Long id, @RequestBody Docente docenteDetails) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
-
-        docente.setNombre(docenteDetails.getNombre());
-        docente.setTelefono(docenteDetails.getTelefono());
-        docente.setCorreoPersonal(docenteDetails.getCorreoPersonal());
-        docente.setFechaNacimiento(docenteDetails.getFechaNacimiento());
-        docente.setNumeroDocumento(docenteDetails.getNumeroDocumento());
-        docente.setEstado(docenteDetails.isEstado());
-        docente.setTipoDocumento(docenteDetails.getTipoDocumento());
-        docente.setGenero(docenteDetails.getGenero());
-        docente.setFacultad(docenteDetails.getFacultad());
-        docente.setEspecialidad(docenteDetails.getEspecialidad());
-        docente.setCodigoInstitucional(docenteDetails.getCodigoInstitucional());
-        docente.setCorreoInstitucional(docenteDetails.getCorreoInstitucional());
-
-        Docente updatedDocente = docenteRepository.save(docente);
-        return ResponseEntity.ok(updatedDocente);
+    public ResponseEntity<Docente> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
+        Docente actualizado = docenteService.actualizarDocente(id, docente);
+        return ResponseEntity.ok(actualizado);
     }
 
     // Eliminar docente
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteDocente(@PathVariable Long id) {
-        Docente docente = docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no existe con ID: " + id));
-
-        docenteRepository.delete(docente);
+    public ResponseEntity<Map<String, Boolean>> eliminarDocente(@PathVariable Long id) {
+        docenteService.eliminarDocente(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
