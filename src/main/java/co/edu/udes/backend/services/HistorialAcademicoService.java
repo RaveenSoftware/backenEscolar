@@ -1,24 +1,18 @@
 package co.edu.udes.backend.services;
 
-import co.edu.udes.backend.models.*;
-import co.edu.udes.backend.repositories.*;
+import co.edu.udes.backend.models.Calificaciones;
+import co.edu.udes.backend.models.Poligrafo;
+import co.edu.udes.backend.repositories.CalificacionesRepository;
+import co.edu.udes.backend.repositories.PoligrafoRepository;
+import co.edu.udes.backend.repositories.EstudianteRepository;
+import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class HistorialAcademicoService {
-
-    @Autowired
-    private EstudianteRepository estudianteRepository;
-
-    @Autowired
-    private CursoRepository cursoRepository;
-
-    @Autowired
-    private AulaHorarioRepository aulaHorarioRepository;
 
     @Autowired
     private CalificacionesRepository calificacionesRepository;
@@ -26,38 +20,51 @@ public class HistorialAcademicoService {
     @Autowired
     private PoligrafoRepository poligrafoRepository;
 
-    // 1. Ver el horario de un estudiante (basado en sus cursos)
-    public List<AulaHorario> obtenerHorarioEstudiante(Long estudianteId) {
-        Optional<Estudiante> estudianteOpt = estudianteRepository.findById(estudianteId);
-        if (estudianteOpt.isEmpty()) return Collections.emptyList();
+    @Autowired
+    private EstudianteRepository estudianteRepository;
 
-        Estudiante estudiante = estudianteOpt.get();
+    // Obtener todas las calificaciones de un estudiante
+    public List<Calificaciones> obtenerCalificacionesPorEstudiante(Long estudianteId) {
+        validarEstudianteExistente(estudianteId);
+        return calificacionesRepository.findByEstudianteId(estudianteId);
+    }
 
-        List<Curso> cursos = cursoRepository.findByMatriculaAcademicaEstudiante(estudiante);
+    // Obtener registros del polígrafos (desempeño por asignatura)
+    public List<Poligrafo> obtenerResumenPoligrafo(Long estudianteId) {
+        validarEstudianteExistente(estudianteId);
+        return poligrafoRepository.findByEstudianteId(estudianteId);
+    }
 
-        List<AulaHorario> horarios = new ArrayList<>();
-        for (Curso curso : cursos) {
-            horarios.addAll(aulaHorarioRepository.findByCurso(curso));
+    // Calcular promedio general del estudiante
+    public double calcularPromedioGeneral(Long estudianteId) {
+        validarEstudianteExistente(estudianteId);
+        List<Poligrafo> registros = poligrafoRepository.findByEstudianteId(estudianteId);
+        if (registros.isEmpty()) return 0.0;
+
+        double suma = 0.0;
+        for (Poligrafo p : registros) {
+            suma += p.getPromedio();
         }
-        return horarios;
+        return suma / registros.size();
     }
 
-    // 2. Ver las notas puestas por un docente
-    public List<Calificaciones> obtenerNotasPorDocente(Long docenteId) {
-        return calificacionesRepository.findByCurso_Docente_Id(docenteId);
+    // Contar asignaturas aprobadas
+    public long contarAprobadas(Long estudianteId) {
+        validarEstudianteExistente(estudianteId);
+        List<Poligrafo> registros = poligrafoRepository.findByEstudianteId(estudianteId);
+        return registros.stream().filter(p -> p.getCalificaciones().getDefinitiva() >= 3.0).count();
     }
 
-    // 3. Ver la nota final de un estudiante en un curso
-    public Optional<Double> obtenerNotaFinalCurso(Long estudianteId, Long cursoId) {
-        return calificacionesRepository.findByEstudianteIdAndCursoId(estudianteId, cursoId)
-                .map(Calificaciones::getDefinitiva);
+    // Contar asignaturas reprobadas
+    public long contarReprobadas(Long estudianteId) {
+        validarEstudianteExistente(estudianteId);
+        List<Poligrafo> registros = poligrafoRepository.findByEstudianteId(estudianteId);
+        return registros.stream().filter(p -> p.getCalificaciones().getDefinitiva() < 3.0).count();
     }
 
-    // 4. Ver todas las notas finales de un estudiante
-    public List<Double> obtenerNotasFinalesEstudiante(Long estudianteId) {
-        return calificacionesRepository.findByEstudianteId(estudianteId)
-                .stream()
-                .map(Calificaciones::getDefinitiva)
-                .collect(Collectors.toList());
+    private void validarEstudianteExistente(Long id) {
+        if (!estudianteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Estudiante no existe con ID: " + id);
+        }
     }
 }

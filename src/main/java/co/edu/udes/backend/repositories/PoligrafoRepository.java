@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface PoligrafoRepository extends JpaRepository<Poligrafo, Long> {
     List<Poligrafo> findByEstudianteId(Long estudianteId);
+    boolean existsByEstudianteIdAndAsignaturaIdAndPromedioGreaterThanEqual(Long estudianteId, Long asignaturaId, float notaMinima);
 
 
 }

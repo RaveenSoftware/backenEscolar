@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface MatriculaAcademicaRepository extends JpaRepository<MatriculaAcademica, Long> {
+
     List<MatriculaAcademica> findByEstudianteId(Long estudianteId);
 }

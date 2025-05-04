@@ -3,6 +3,7 @@ package co.edu.udes.backend.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import co.edu.udes.backend.models.EstadoAsistencia;
 
 @Entity(name = "asistencias")
 public class Asistencia {
