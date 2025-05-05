@@ -18,4 +18,6 @@ public interface CalificacionesRepository extends JpaRepository<Calificaciones, 
 
     //  Todas las calificaciones de un estudiante
     List<Calificaciones> findByEstudianteId(Long estudianteId);
+
+
 }

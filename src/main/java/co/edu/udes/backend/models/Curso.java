@@ -19,6 +19,20 @@ public class Curso {
     @Column(name = "creditos", nullable = false)
     private int creditos;
 
+    @Column(name = "cupo_maximo", nullable = false)
+    private int cupoMaximo;
+
+    @Column(name = "inscritos_actuales", nullable = false)
+    private int inscritosActuales = 0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "curso_prerrequisitos",
+            joinColumns = @JoinColumn(name = "curso_id"),
+            inverseJoinColumns = @JoinColumn(name = "prerrequisito_id")
+    )
+    private List<Curso> prerrequisitos;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programa_id", nullable = false)
     private ProgramaAcademico programa;
@@ -40,7 +54,6 @@ public class Curso {
     @Column(name = "competencias", columnDefinition = "TEXT")
     private String competencias;
 
-    //  NUEVO: Relación con docentes
     @ManyToMany
     @JoinTable(
             name = "docente_cursos",
@@ -51,12 +64,15 @@ public class Curso {
 
     public Curso() {}
 
-    public Curso(String nombre, String codigo, int creditos, ProgramaAcademico programa,
-                 Asignatura asignatura, Horario horario, String contenido, String objetivos,
-                 String competencias, List<Docente> docentes) {
+    public Curso(String nombre, String codigo, int creditos, int cupoMaximo, int inscritosActuales,
+                 ProgramaAcademico programa, Asignatura asignatura, Horario horario,
+                 String contenido, String objetivos, String competencias,
+                 List<Docente> docentes, List<Curso> prerrequisitos) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.creditos = creditos;
+        this.cupoMaximo = cupoMaximo;
+        this.inscritosActuales = inscritosActuales;
         this.programa = programa;
         this.asignatura = asignatura;
         this.horario = horario;
@@ -64,9 +80,9 @@ public class Curso {
         this.objetivos = objetivos;
         this.competencias = competencias;
         this.docentes = docentes;
+        this.prerrequisitos = prerrequisitos;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -78,6 +94,15 @@ public class Curso {
 
     public int getCreditos() { return creditos; }
     public void setCreditos(int creditos) { this.creditos = creditos; }
+
+    public int getCupoMaximo() { return cupoMaximo; }
+    public void setCupoMaximo(int cupoMaximo) { this.cupoMaximo = cupoMaximo; }
+
+    public int getInscritosActuales() { return inscritosActuales; }
+    public void setInscritosActuales(int inscritosActuales) { this.inscritosActuales = inscritosActuales; }
+
+    public List<Curso> getPrerrequisitos() { return prerrequisitos; }
+    public void setPrerrequisitos(List<Curso> prerrequisitos) { this.prerrequisitos = prerrequisitos; }
 
     public ProgramaAcademico getPrograma() { return programa; }
     public void setPrograma(ProgramaAcademico programa) { this.programa = programa; }
