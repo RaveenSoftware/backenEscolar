@@ -53,7 +53,7 @@ public class PensumController {
 
         pensum.setCodigoPensum(pensumDetails.getCodigoPensum());
         pensum.setAsignaturas(pensumDetails.getAsignaturas());
-        pensum.setProgramaAcademico(pensumDetails.getProgramaAcademico());
+        pensum.setPrograma(pensumDetails.getPrograma());
         pensum.setEstado(pensumDetails.isEstado());
 
         Pensum updated = pensumRepository.save(pensum);

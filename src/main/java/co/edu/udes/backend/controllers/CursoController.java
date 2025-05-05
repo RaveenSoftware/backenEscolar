@@ -1,75 +1,55 @@
 package co.edu.udes.backend.controllers;
 
 import co.edu.udes.backend.models.Curso;
-import co.edu.udes.backend.repositories.CursoRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.services.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/cursos")
 @CrossOrigin(origins = "*")
 public class CursoController {
 
-    private final CursoRepository cursoRepository;
-
     @Autowired
-    public CursoController(CursoRepository cursoRepository) {
-        this.cursoRepository = cursoRepository;
+    private CursoService cursoService;
+
+    // Crear curso
+    @PostMapping
+    public ResponseEntity<Curso> crearCurso(@RequestBody Curso curso) {
+        Curso nuevo = cursoService.crearCurso(curso);
+        return ResponseEntity.ok(nuevo);
     }
 
     // Obtener todos los cursos
     @GetMapping
-    public ResponseEntity<List<Curso>> getAllCursos() {
-        List<Curso> cursos = cursoRepository.findAll();
-        return ResponseEntity.ok(cursos);
-    }
-
-    // Crear un nuevo curso
-    @PostMapping
-    public ResponseEntity<Curso> createCurso(@RequestBody Curso curso) {
-        Curso savedCurso = cursoRepository.save(curso);
-        return ResponseEntity.ok(savedCurso);
+    public ResponseEntity<List<Curso>> obtenerTodos() {
+        List<Curso> lista = cursoService.obtenerTodos();
+        return ResponseEntity.ok(lista);
     }
 
     // Obtener curso por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Curso> getCursoById(@PathVariable Long id) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
+    public ResponseEntity<Curso> obtenerPorId(@PathVariable Long id) {
+        Curso curso = cursoService.obtenerPorId(id);
         return ResponseEntity.ok(curso);
     }
 
-    // Actualizar curso existente
+    // Actualizar curso
     @PutMapping("/{id}")
-    public ResponseEntity<Curso> updateCurso(@PathVariable Long id, @RequestBody Curso cursoDetails) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
-
-        curso.setDocente(cursoDetails.getDocente());
-        curso.setNombre(cursoDetails.getNombre());
-        curso.setGrupo(cursoDetails.getGrupo());
-        curso.setAsignatura(cursoDetails.getAsignatura());
-        curso.setSemestreAcademico(cursoDetails.getSemestreAcademico());
-        curso.setProgramaAcademico(cursoDetails.getProgramaAcademico());
-        curso.setMatriculaAcademica(cursoDetails.getMatriculaAcademica());
-
-        Curso updatedCurso = cursoRepository.save(curso);
-        return ResponseEntity.ok(updatedCurso);
+    public ResponseEntity<Curso> actualizarCurso(@PathVariable Long id, @RequestBody Curso cursoActualizado) {
+        Curso actualizado = cursoService.actualizarCurso(id, cursoActualizado);
+        return ResponseEntity.ok(actualizado);
     }
 
     // Eliminar curso
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> deleteCurso(@PathVariable Long id) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no existe con ID: " + id));
-
-        cursoRepository.delete(curso);
+    public ResponseEntity<Map<String, Boolean>> eliminarCurso(@PathVariable Long id) {
+        cursoService.eliminarCurso(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);

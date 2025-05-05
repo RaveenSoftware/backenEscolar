@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class MatriculaAcademicaService {
+
+    private static final int MAX_CREDITOS = 20;
 
     @Autowired
     private MatriculaAcademicaRepository matriculaRepository;
@@ -25,7 +26,7 @@ public class MatriculaAcademicaService {
     @Autowired
     private CursoRepository cursoRepository;
 
-    // Registrar una nueva matrícula
+    // Registrar nueva matrícula
     public MatriculaAcademica registrarMatricula(MatriculaAcademica matricula) {
         Long estudianteId = matricula.getEstudiante().getId();
         Estudiante estudiante = estudianteRepository.findById(estudianteId)
@@ -35,11 +36,9 @@ public class MatriculaAcademicaService {
         return matriculaRepository.save(matricula);
     }
 
-    // Inscribir un curso a una matrícula
+    // Inscribir curso a una matrícula
     public MatriculaAcademica inscribirCurso(Long matriculaId, Long cursoId) {
-        MatriculaAcademica matricula = matriculaRepository.findById(matriculaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Matrícula no encontrada con ID: " + matriculaId));
-
+        MatriculaAcademica matricula = obtenerPorId(matriculaId);
         Curso curso = cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado con ID: " + cursoId));
 
@@ -47,35 +46,44 @@ public class MatriculaAcademicaService {
             throw new IllegalStateException("El curso ya está inscrito en esta matrícula.");
         }
 
+        int nuevosCreditos = matricula.getCreditosActuales() + curso.getCreditos();
+        if (nuevosCreditos > MAX_CREDITOS) {
+            throw new IllegalStateException("No se puede inscribir el curso: supera el máximo de créditos permitidos.");
+        }
+
+        if (!cumplePrerrequisitos(matricula.getEstudiante(), curso)) {
+            throw new IllegalStateException("El estudiante no cumple los prerrequisitos del curso.");
+        }
+
         matricula.getCursos().add(curso);
+        matricula.setCreditosActuales(nuevosCreditos);
         return matriculaRepository.save(matricula);
     }
 
-    // Eliminar un curso de una matrícula
+    // Eliminar curso de matrícula
     public MatriculaAcademica eliminarCursoDeMatricula(Long matriculaId, Long cursoId) {
-        MatriculaAcademica matricula = matriculaRepository.findById(matriculaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Matrícula no encontrada con ID: " + matriculaId));
-
+        MatriculaAcademica matricula = obtenerPorId(matriculaId);
         Curso curso = cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado con ID: " + cursoId));
 
-        List<Curso> cursos = matricula.getCursos();
-        if (!cursos.remove(curso)) {
+        if (!matricula.getCursos().remove(curso)) {
             throw new IllegalStateException("El curso no estaba inscrito en esta matrícula.");
         }
+
+        int nuevosCreditos = matricula.getCreditosActuales() - curso.getCreditos();
+        matricula.setCreditosActuales(Math.max(nuevosCreditos, 0));
 
         return matriculaRepository.save(matricula);
     }
 
-    // Obtener todas las matrículas de un estudiante
+    // Obtener matrículas por estudiante
     public List<MatriculaAcademica> obtenerMatriculasPorEstudiante(Long estudianteId) {
         return matriculaRepository.findByEstudianteId(estudianteId);
     }
 
     // Eliminar matrícula completa
     public void eliminarMatricula(Long id) {
-        MatriculaAcademica matricula = matriculaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Matrícula no encontrada con ID: " + id));
+        MatriculaAcademica matricula = obtenerPorId(id);
         matriculaRepository.delete(matricula);
     }
 
@@ -92,8 +100,7 @@ public class MatriculaAcademicaService {
 
     // Actualizar matrícula
     public MatriculaAcademica actualizarMatricula(Long id, MatriculaAcademica detalles) {
-        MatriculaAcademica matricula = matriculaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Matrícula no encontrada con ID: " + id));
+        MatriculaAcademica matricula = obtenerPorId(id);
 
         matricula.setFecha(detalles.getFecha());
         matricula.setEstado(detalles.isEstado());
@@ -103,5 +110,11 @@ public class MatriculaAcademicaService {
         matricula.setCursos(detalles.getCursos());
 
         return matriculaRepository.save(matricula);
+    }
+
+    // Validación (simulada) de prerrequisitos
+    private boolean cumplePrerrequisitos(Estudiante estudiante, Curso curso) {
+        // Lógica futura: revisar si ya cursó ciertas asignaturas
+        return true;
     }
 }

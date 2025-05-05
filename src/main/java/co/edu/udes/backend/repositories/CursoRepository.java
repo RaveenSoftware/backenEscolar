@@ -9,6 +9,12 @@ import java.util.List;
 @Repository
 public interface CursoRepository extends JpaRepository<Curso, Long> {
 
-    // Buscar cursos asignados a un docente específico
-    List<Curso> findByDocenteId(Long docenteId);
+    // Buscar cursos por programa académico
+    List<Curso> findByProgramaId(Long programaId);
+
+    // Buscar cursos por asignatura
+    List<Curso> findByAsignaturaId(Long asignaturaId);
+
+    // Verificar si existe un curso con un código específico
+    boolean existsByCodigo(String codigo);
 }

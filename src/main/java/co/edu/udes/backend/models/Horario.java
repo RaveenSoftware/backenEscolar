@@ -23,14 +23,23 @@ public class Horario {
     @Column(name = "estado", nullable = false)
     private boolean estado;
 
+    @Column(name = "tipo_actividad", nullable = false)
+    private String tipoActividad; // CLASE, EXAMEN, TUTORIA
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aula_id", nullable = false)
+    private Aula aula;
+
     public Horario() {
     }
 
-    public Horario(LocalTime horaInicio, LocalTime horaFinalizacion, String dia, boolean estado) {
+    public Horario(LocalTime horaInicio, LocalTime horaFinalizacion, String dia, boolean estado, String tipoActividad, Aula aula) {
         this.horaInicio = horaInicio;
         this.horaFinalizacion = horaFinalizacion;
         this.dia = dia;
         this.estado = estado;
+        this.tipoActividad = tipoActividad;
+        this.aula = aula;
     }
 
     public long getId() {
@@ -73,7 +82,22 @@ public class Horario {
         this.estado = estado;
     }
 
-    // Método para calcular la duración en horas del horario
+    public String getTipoActividad() {
+        return tipoActividad;
+    }
+
+    public void setTipoActividad(String tipoActividad) {
+        this.tipoActividad = tipoActividad;
+    }
+
+    public Aula getAula() {
+        return aula;
+    }
+
+    public void setAula(Aula aula) {
+        this.aula = aula;
+    }
+
     public int getDuracionHoras() {
         return (int) Duration.between(horaInicio, horaFinalizacion).toHours();
     }

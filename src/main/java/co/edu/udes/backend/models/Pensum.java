@@ -1,47 +1,52 @@
 package co.edu.udes.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
 import java.util.List;
 
-@Entity(name = "pensums")
+@Entity
+@Table(name = "pensums")
 public class Pensum {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(name = "codigo_pensum")
+    @Column(name = "codigo_pensum", nullable = false, unique = true)
     private String codigoPensum;
 
-    @OneToMany(mappedBy = "pensum", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("pensum") // Evita ciclos infinitos
-    private List<Asignatura> asignaturas;
+    @Column(nullable = false)
+    private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programa_academico_id")
-    private ProgramaAcademico programaAcademico;
-
-    @Column(name = "estado")
+    @Column(nullable = false)
     private boolean estado;
 
-    public Pensum() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "programa_id", nullable = false)
+    private ProgramaAcademico programa;
 
-    public Pensum(long id, String codigoPensum, List<Asignatura> asignaturas, ProgramaAcademico programaAcademico, boolean estado) {
-        this.id = id;
+    @ManyToMany
+    @JoinTable(
+            name = "pensum_asignaturas",
+            joinColumns = @JoinColumn(name = "pensum_id"),
+            inverseJoinColumns = @JoinColumn(name = "asignatura_id")
+    )
+    private List<Asignatura> asignaturas;
+
+    public Pensum() {}
+
+    public Pensum(String codigoPensum, String nombre, boolean estado, ProgramaAcademico programa, List<Asignatura> asignaturas) {
         this.codigoPensum = codigoPensum;
-        this.asignaturas = asignaturas;
-        this.programaAcademico = programaAcademico;
+        this.nombre = nombre;
         this.estado = estado;
+        this.programa = programa;
+        this.asignaturas = asignaturas;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,20 +58,12 @@ public class Pensum {
         this.codigoPensum = codigoPensum;
     }
 
-    public List<Asignatura> getAsignaturas() {
-        return asignaturas;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setAsignaturas(List<Asignatura> asignaturas) {
-        this.asignaturas = asignaturas;
-    }
-
-    public ProgramaAcademico getProgramaAcademico() {
-        return programaAcademico;
-    }
-
-    public void setProgramaAcademico(ProgramaAcademico programaAcademico) {
-        this.programaAcademico = programaAcademico;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public boolean isEstado() {
@@ -75,5 +72,21 @@ public class Pensum {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+    public ProgramaAcademico getPrograma() {
+        return programa;
+    }
+
+    public void setPrograma(ProgramaAcademico programa) {
+        this.programa = programa;
+    }
+
+    public List<Asignatura> getAsignaturas() {
+        return asignaturas;
+    }
+
+    public void setAsignaturas(List<Asignatura> asignaturas) {
+        this.asignaturas = asignaturas;
     }
 }

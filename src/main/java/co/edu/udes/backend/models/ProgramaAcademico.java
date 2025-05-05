@@ -10,117 +10,69 @@ public class ProgramaAcademico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "codigo_programa")
+    @Column(name = "codigo_programa", nullable = false, unique = true)
     private String codigoPrograma;
 
-    @Column(name = "nombre_programa")
+    @Column(name = "nombre_programa", nullable = false)
     private String nombrePrograma;
-
-    @OneToMany(mappedBy = "programaAcademico", fetch = FetchType.LAZY)
-    private List<Pensum> pensums;
 
     @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name = "estado")
+    @Column(name = "estado", nullable = false)
     private boolean estado;
 
-    @ManyToOne
-    @JoinColumn(name = "facultad_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "facultad_id", nullable = false)
     private Facultad facultad;
 
-    @Column(name = "creditos_programa")
-    private String creditosPrograma;
+    @Column(name = "creditos_programa", nullable = false)
+    private int creditosPrograma;
 
-    @OneToMany(mappedBy = "programaAcademico")
+    @OneToMany(mappedBy = "programa")
     private List<Curso> cursos;
 
-    public ProgramaAcademico() {
-    }
+    @OneToMany(mappedBy = "programa")
+    private List<Pensum> pensums;
 
-    public ProgramaAcademico(long id, String codigoPrograma, String nombrePrograma, List<Pensum> pensums,
-                             String descripcion, boolean estado, Facultad facultad,
-                             String creditosPrograma, List<Curso> cursos) {
-        this.id = id;
+    public ProgramaAcademico() {}
+
+    public ProgramaAcademico(String codigoPrograma, String nombrePrograma, String descripcion,
+                             boolean estado, Facultad facultad, int creditosPrograma) {
         this.codigoPrograma = codigoPrograma;
         this.nombrePrograma = nombrePrograma;
-        this.pensums = pensums;
         this.descripcion = descripcion;
         this.estado = estado;
         this.facultad = facultad;
         this.creditosPrograma = creditosPrograma;
-        this.cursos = cursos;
     }
 
-    public long getId() {
-        return id;
-    }
+    // Getters y Setters
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
-    public String getCodigoPrograma() {
-        return codigoPrograma;
-    }
+    public String getCodigoPrograma() { return codigoPrograma; }
+    public void setCodigoPrograma(String codigoPrograma) { this.codigoPrograma = codigoPrograma; }
 
-    public void setCodigoPrograma(String codigoPrograma) {
-        this.codigoPrograma = codigoPrograma;
-    }
+    public String getNombrePrograma() { return nombrePrograma; }
+    public void setNombrePrograma(String nombrePrograma) { this.nombrePrograma = nombrePrograma; }
 
-    public String getNombrePrograma() {
-        return nombrePrograma;
-    }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public void setNombrePrograma(String nombrePrograma) {
-        this.nombrePrograma = nombrePrograma;
-    }
+    public boolean isEstado() { return estado; }
+    public void setEstado(boolean estado) { this.estado = estado; }
 
-    public List<Pensum> getPensums() {
-        return pensums;
-    }
+    public Facultad getFacultad() { return facultad; }
+    public void setFacultad(Facultad facultad) { this.facultad = facultad; }
 
-    public void setPensums(List<Pensum> pensums) {
-        this.pensums = pensums;
-    }
+    public int getCreditosPrograma() { return creditosPrograma; }
+    public void setCreditosPrograma(int creditosPrograma) { this.creditosPrograma = creditosPrograma; }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public List<Curso> getCursos() { return cursos; }
+    public void setCursos(List<Curso> cursos) { this.cursos = cursos; }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public boolean isEstado() {  // <- este es el getter correcto para boolean
-        return estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
-
-    public Facultad getFacultad() {
-        return facultad;
-    }
-
-    public void setFacultad(Facultad facultad) {
-        this.facultad = facultad;
-    }
-
-    public String getCreditosPrograma() {
-        return creditosPrograma;
-    }
-
-    public void setCreditosPrograma(String creditosPrograma) {
-        this.creditosPrograma = creditosPrograma;
-    }
-
-    public List<Curso> getCursos() {
-        return cursos;
-    }
-
-    public void setCursos(List<Curso> cursos) {
-        this.cursos = cursos;
-    }
+    public List<Pensum> getPensums() { return pensums; }
+    public void setPensums(List<Pensum> pensums) { this.pensums = pensums; }
 }
