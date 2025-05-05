@@ -22,9 +22,9 @@ public class Estudiante extends Persona {
 
     public Estudiante(String nombre, String telefono, String correoPersonal,
                       LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
-                      TipoDocumento tipoDocumento, TipoGenero genero,
+                      TipoDocumento tipoDocumento, TipoGenero genero, Rol rol,
                       ProgramaAcademico programa, String codigoInstitucional, String correoInstitucional) {
-        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
+        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero, rol);
         this.programa = programa;
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;

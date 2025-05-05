@@ -41,10 +41,10 @@ public class Docente extends Persona {
 
     public Docente(String nombre, String telefono, String correoPersonal,
                    LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
-                   TipoDocumento tipoDocumento, TipoGenero genero,
+                   TipoDocumento tipoDocumento, TipoGenero genero, Rol rol,
                    Facultad facultad, String especialidad,
                    String codigoInstitucional, String correoInstitucional) {
-        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
+        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero, rol);
         this.facultad = facultad;
         this.especialidad = especialidad;
         this.codigoInstitucional = codigoInstitucional;

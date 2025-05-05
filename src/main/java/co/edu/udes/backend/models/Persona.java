@@ -1,15 +1,17 @@
 package co.edu.udes.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity(name = "personas")
+@Entity
+@Table(name = "personas")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -31,19 +33,23 @@ public class Persona {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_documento_id", nullable = false)
+    @JsonIgnore
     private TipoDocumento tipoDocumento;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_genero_id", nullable = false)
+    @JsonIgnore
     private TipoGenero genero;
 
-    public Persona() {
-        // Constructor por defecto requerido por JPA
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rol_id", nullable = false)
+    private Rol rol;
+
+    public Persona() {}
 
     public Persona(String nombre, String telefono, String correoPersonal,
                    LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
-                   TipoDocumento tipoDocumento, TipoGenero genero) {
+                   TipoDocumento tipoDocumento, TipoGenero genero, Rol rol) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.correoPersonal = correoPersonal;
@@ -52,13 +58,16 @@ public class Persona {
         this.estado = estado;
         this.tipoDocumento = tipoDocumento;
         this.genero = genero;
+        this.rol = rol;
     }
 
-    public long getId() {
+    // Getters y Setters
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -124,5 +133,13 @@ public class Persona {
 
     public void setGenero(TipoGenero genero) {
         this.genero = genero;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
 }
