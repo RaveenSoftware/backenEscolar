@@ -40,7 +40,7 @@ public class Curso {
     @Column(name = "competencias", columnDefinition = "TEXT")
     private String competencias;
 
-    // 🚨 NUEVO: Relación con docentes
+    //  NUEVO: Relación con docentes
     @ManyToMany
     @JoinTable(
             name = "docente_cursos",
