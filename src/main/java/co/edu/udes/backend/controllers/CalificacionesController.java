@@ -16,7 +16,7 @@ public class CalificacionesController {
     @Autowired
     private CalificacionesService calificacionesService;
 
-    // ===== CRUD BÁSICO =====
+    //  CRUD BÁSICO
 
     @GetMapping
     public ResponseEntity<List<Calificaciones>> getAllCalificaciones() {
@@ -46,15 +46,15 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    // ===== ENDPOINTS ADICIONALES =====
+    //  CALIFICACIONES POR ESTUDIANTE
 
-    // Calificaciones por estudiante
     @GetMapping("/por-estudiante/{estudianteId}")
     public ResponseEntity<List<Calificaciones>> getCalificacionesPorEstudiante(@PathVariable Long estudianteId) {
         return ResponseEntity.ok(calificacionesService.obtenerPorEstudiante(estudianteId));
     }
 
-    // Promedio general de un estudiante
+    //  PROMEDIO GENERAL
+
     @GetMapping("/promedio/{estudianteId}")
     public ResponseEntity<Map<String, Double>> getPromedioGeneral(@PathVariable Long estudianteId) {
         double promedio = calificacionesService.calcularPromedioGeneral(estudianteId);
@@ -63,7 +63,8 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    // Proyección de nota final
+    //  PROYECCIÓN DE NOTA
+
     @GetMapping("/proyeccion/{estudianteId}/{cursoId}")
     public ResponseEntity<Map<String, Double>> proyectarNotaFinal(
             @PathVariable Long estudianteId,
@@ -76,15 +77,36 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    // ===== NUEVO: Reporte tipo boletín por estudiante =====
-    @GetMapping("/boletin/{estudianteId}")
-    public ResponseEntity<Map<String, Object>> getBoletinEstudiante(@PathVariable Long estudianteId) {
+    //  REPORTE POR CURSO
+
+    @GetMapping("/reporte/curso/{cursoId}")
+    public ResponseEntity<Map<String, Object>> generarReportePorCurso(@PathVariable Long cursoId) {
+        return ResponseEntity.ok(calificacionesService.generarReporteCurso(cursoId));
+    }
+
+    //  BOLETÍN ESTUDIANTE
+
+    @GetMapping("/reporte/boletin/{estudianteId}")
+    public ResponseEntity<Map<String, Object>> generarBoletinEstudiante(@PathVariable Long estudianteId) {
         return ResponseEntity.ok(calificacionesService.generarBoletinEstudiante(estudianteId));
     }
 
-    // ===== NUEVO: Estadísticas del curso (promedio, máximo, mínimo, reprobados) =====
-    @GetMapping("/reporte/curso/{cursoId}")
-    public ResponseEntity<Map<String, Object>> getReporteCurso(@PathVariable Long cursoId) {
-        return ResponseEntity.ok(calificacionesService.generarReporteCurso(cursoId));
+    // 🗨 NUEVO → AGREGAR COMENTARIO
+
+    @PostMapping("/{id}/comentario")
+    public ResponseEntity<Calificaciones> agregarComentario(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        String comentario = payload.get("comentario");
+        Calificaciones actualizado = calificacionesService.agregarComentarioDocente(id, comentario);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    // 🗨 NUEVO → OBTENER COMENTARIO
+
+    @GetMapping("/{id}/comentario")
+    public ResponseEntity<Map<String, String>> obtenerComentario(@PathVariable Long id) {
+        String comentario = calificacionesService.obtenerComentarioDocente(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("comentario", comentario != null ? comentario : "Sin comentario");
+        return ResponseEntity.ok(response);
     }
 }

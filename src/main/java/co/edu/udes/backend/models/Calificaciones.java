@@ -22,6 +22,9 @@ public class Calificaciones {
     @Column(name = "definitiva")
     private Double definitiva;
 
+    @Column(name = "comentarios_docente", columnDefinition = "TEXT") // 🚨 NUEVO
+    private String comentariosDocente;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
@@ -79,6 +82,14 @@ public class Calificaciones {
 
     public void setDefinitiva(Double definitiva) {
         this.definitiva = definitiva;
+    }
+
+    public String getComentariosDocente() {
+        return comentariosDocente;
+    }
+
+    public void setComentariosDocente(String comentariosDocente) {
+        this.comentariosDocente = comentariosDocente;
     }
 
     public Estudiante getEstudiante() {

@@ -179,4 +179,17 @@ public class CalificacionesService {
 
         return boletin;
     }
+
+    // METI → Agregar comentario del docente
+    public Calificaciones agregarComentarioDocente(Long calificacionId, String comentario) {
+        Calificaciones calificacion = obtenerPorId(calificacionId);
+        calificacion.setComentariosDocente(comentario);
+        return calificacionesRepository.save(calificacion);
+    }
+
+    // METI → Consultar comentario del docente
+    public String obtenerComentarioDocente(Long calificacionId) {
+        Calificaciones calificacion = obtenerPorId(calificacionId);
+        return calificacion.getComentariosDocente();
+    }
 }
