@@ -11,12 +11,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "JWT1234567890JWT1234567890JWT123"; // 32+ caracteres // mínimo 32 bytes para HS256
-    private static final long EXPIRATION_TIME = 86400000; // 1 día
+    private static final String SECRET = "JWT1234567890JWT1234567890JWT123"; // mínimo 32 bytes para HS256
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1 día en milisegundos
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    // Generar token con nombre de usuario
+    // Generar token JWT con nombre de usuario y tiempo de expiración
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -26,30 +26,29 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Extraer el nombre de usuario desde el token
+    // Extraer nombre de usuario desde el token
     public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
-    // Validar si el token es correcto y coincide con el usuario
+    // Validar token: correcto + no expirado + pertenece al usuario
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    // Validar expiración
-    private boolean isTokenExpired(String token) {
-        Date expiration = Jwts.parserBuilder()
+    // Exponer método público para validar expiración si necesitas usarlo fuera
+    public boolean isTokenExpired(String token) {
+        Date expiration = extractAllClaims(token).getExpiration();
+        return expiration.before(new Date());
+    }
+
+    // Método auxiliar para extraer todos los claims
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-        return expiration.before(new Date());
+                .getBody();
     }
 }

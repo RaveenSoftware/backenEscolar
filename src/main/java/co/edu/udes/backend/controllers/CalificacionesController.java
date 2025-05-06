@@ -4,6 +4,7 @@ import co.edu.udes.backend.models.Calificaciones;
 import co.edu.udes.backend.services.CalificacionesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -16,28 +17,33 @@ public class CalificacionesController {
     @Autowired
     private CalificacionesService calificacionesService;
 
-    //  CRUD BÁSICO
+    // CRUD BÁSICO
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @GetMapping
     public ResponseEntity<List<Calificaciones>> getAllCalificaciones() {
         return ResponseEntity.ok(calificacionesService.obtenerTodas());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @PostMapping
     public ResponseEntity<Calificaciones> createCalificacion(@RequestBody Calificaciones calificacion) {
         return ResponseEntity.ok(calificacionesService.registrarCalificacion(calificacion));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @GetMapping("/{id}")
     public ResponseEntity<Calificaciones> getCalificacionById(@PathVariable Long id) {
         return ResponseEntity.ok(calificacionesService.obtenerPorId(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<Calificaciones> updateCalificacion(@PathVariable Long id, @RequestBody Calificaciones nueva) {
         return ResponseEntity.ok(calificacionesService.actualizarCalificacion(id, nueva));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteCalificacion(@PathVariable Long id) {
         calificacionesService.eliminar(id);
@@ -46,15 +52,17 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    //  CALIFICACIONES POR ESTUDIANTE
+    // CALIFICACIONES POR ESTUDIANTE
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE', 'ESTUDIANTE')")
     @GetMapping("/por-estudiante/{estudianteId}")
     public ResponseEntity<List<Calificaciones>> getCalificacionesPorEstudiante(@PathVariable Long estudianteId) {
         return ResponseEntity.ok(calificacionesService.obtenerPorEstudiante(estudianteId));
     }
 
-    //  PROMEDIO GENERAL
+    // PROMEDIO GENERAL
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE', 'ESTUDIANTE')")
     @GetMapping("/promedio/{estudianteId}")
     public ResponseEntity<Map<String, Double>> getPromedioGeneral(@PathVariable Long estudianteId) {
         double promedio = calificacionesService.calcularPromedioGeneral(estudianteId);
@@ -63,8 +71,9 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    //  PROYECCIÓN DE NOTA
+    // PROYECCIÓN DE NOTA
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE', 'ESTUDIANTE')")
     @GetMapping("/proyeccion/{estudianteId}/{cursoId}")
     public ResponseEntity<Map<String, Double>> proyectarNotaFinal(
             @PathVariable Long estudianteId,
@@ -77,22 +86,25 @@ public class CalificacionesController {
         return ResponseEntity.ok(response);
     }
 
-    //  REPORTE POR CURSO
+    // REPORTE POR CURSO
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @GetMapping("/reporte/curso/{cursoId}")
     public ResponseEntity<Map<String, Object>> generarReportePorCurso(@PathVariable Long cursoId) {
         return ResponseEntity.ok(calificacionesService.generarReporteCurso(cursoId));
     }
 
-    //  BOLETÍN ESTUDIANTE
+    // BOLETÍN ESTUDIANTE
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE', 'ESTUDIANTE')")
     @GetMapping("/reporte/boletin/{estudianteId}")
     public ResponseEntity<Map<String, Object>> generarBoletinEstudiante(@PathVariable Long estudianteId) {
         return ResponseEntity.ok(calificacionesService.generarBoletinEstudiante(estudianteId));
     }
 
-    // 🗨 NUEVO → AGREGAR COMENTARIO
+    // NUEVO → AGREGAR COMENTARIO
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     @PostMapping("/{id}/comentario")
     public ResponseEntity<Calificaciones> agregarComentario(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         String comentario = payload.get("comentario");
@@ -100,8 +112,9 @@ public class CalificacionesController {
         return ResponseEntity.ok(actualizado);
     }
 
-    // 🗨 NUEVO → OBTENER COMENTARIO
+    // NUEVO → OBTENER COMENTARIO
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE', 'ESTUDIANTE')")
     @GetMapping("/{id}/comentario")
     public ResponseEntity<Map<String, String>> obtenerComentario(@PathVariable Long id) {
         String comentario = calificacionesService.obtenerComentarioDocente(id);

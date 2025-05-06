@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.PensumRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class PensumController {
     }
 
     // Crear un nuevo pensum
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Pensum> createPensum(@RequestBody Pensum pensum) {
         Pensum saved = pensumRepository.save(pensum);
@@ -46,6 +48,7 @@ public class PensumController {
     }
 
     // Actualizar un pensum existente
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Pensum> updatePensum(@PathVariable Long id, @RequestBody Pensum pensumDetails) {
         Pensum pensum = pensumRepository.findById(id)
@@ -61,6 +64,7 @@ public class PensumController {
     }
 
     // Eliminar pensum
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deletePensum(@PathVariable Long id) {
         Pensum pensum = pensumRepository.findById(id)

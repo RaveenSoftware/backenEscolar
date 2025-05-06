@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.ProgramaAcademicoRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class ProgramaAcademicoController {
     }
 
     // Crear nuevo programa académico
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProgramaAcademico> createProgramaAcademico(@RequestBody ProgramaAcademico programaAcademico) {
         ProgramaAcademico saved = programaAcademicoRepository.save(programaAcademico);
@@ -46,6 +48,7 @@ public class ProgramaAcademicoController {
     }
 
     // Actualizar programa académico
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProgramaAcademico> updateProgramaAcademico(@PathVariable Long id, @RequestBody ProgramaAcademico details) {
         ProgramaAcademico programa = programaAcademicoRepository.findById(id)
@@ -65,6 +68,7 @@ public class ProgramaAcademicoController {
     }
 
     // Eliminar programa académico
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteProgramaAcademico(@PathVariable Long id) {
         ProgramaAcademico programa = programaAcademicoRepository.findById(id)

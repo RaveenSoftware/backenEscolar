@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.TipoDocumentoRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,30 +24,34 @@ public class TipoDocumentoController {
         this.tipoDocumentoRepository = tipoDocumentoRepository;
     }
 
-    // Obtener todos los tipos de documento
+    // Obtener todos los tipos de documento (solo ADMIN)
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TipoDocumento>> getAllTiposDocumento() {
         List<TipoDocumento> tipos = tipoDocumentoRepository.findAll();
         return ResponseEntity.ok(tipos);
     }
 
-    // Crear nuevo tipo de documento
+    // Crear nuevo tipo de documento (solo ADMIN)
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoDocumento> createTipoDocumento(@RequestBody TipoDocumento tipoDocumento) {
         TipoDocumento saved = tipoDocumentoRepository.save(tipoDocumento);
         return ResponseEntity.ok(saved);
     }
 
-    // Obtener tipo de documento por ID
+    // Obtener tipo de documento por ID (solo ADMIN)
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoDocumento> getTipoDocumentoById(@PathVariable Long id) {
         TipoDocumento tipo = tipoDocumentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));
         return ResponseEntity.ok(tipo);
     }
 
-    // Actualizar tipo de documento
+    // Actualizar tipo de documento (solo ADMIN)
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoDocumento> updateTipoDocumento(@PathVariable Long id, @RequestBody TipoDocumento tipoDetails) {
         TipoDocumento tipo = tipoDocumentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));
@@ -58,8 +63,9 @@ public class TipoDocumentoController {
         return ResponseEntity.ok(updated);
     }
 
-    // Eliminar tipo de documento
+    // Eliminar tipo de documento (solo ADMIN)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Boolean>> deleteTipoDocumento(@PathVariable Long id) {
         TipoDocumento tipo = tipoDocumentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no existe con ID: " + id));

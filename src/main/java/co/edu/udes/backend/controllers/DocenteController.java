@@ -4,6 +4,7 @@ import co.edu.udes.backend.models.Docente;
 import co.edu.udes.backend.services.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,34 +19,39 @@ public class DocenteController {
     @Autowired
     private DocenteService docenteService;
 
-    // Crear docente
+    // Solo ADMIN puede crear
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Docente> crearDocente(@RequestBody Docente docente) {
         Docente nuevo = docenteService.crearDocente(docente);
         return ResponseEntity.ok(nuevo);
     }
 
-    // Obtener todos los docentes
+    // ADMIN y DOCENTE pueden ver todos
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     public ResponseEntity<List<Docente>> obtenerTodos() {
         return ResponseEntity.ok(docenteService.obtenerTodos());
     }
 
-    // Obtener docente por ID
+    // ADMIN y DOCENTE pueden ver uno
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
     public ResponseEntity<Docente> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(docenteService.obtenerPorId(id));
     }
 
-    // Actualizar docente
+    // Solo ADMIN puede actualizar
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Docente> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
         Docente actualizado = docenteService.actualizarDocente(id, docente);
         return ResponseEntity.ok(actualizado);
     }
 
-    // Eliminar docente
+    // Solo ADMIN puede eliminar
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Boolean>> eliminarDocente(@PathVariable Long id) {
         docenteService.eliminarDocente(id);
         Map<String, Boolean> response = new HashMap<>();

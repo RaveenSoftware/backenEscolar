@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.TipoGeneroRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,30 +24,34 @@ public class TipoGeneroController {
         this.tipoGeneroRepository = tipoGeneroRepository;
     }
 
-    // Obtener todos los tipos de género
+    // Obtener todos los tipos de género (solo ADMIN)
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TipoGenero>> getAllTiposGenero() {
         List<TipoGenero> lista = tipoGeneroRepository.findAll();
         return ResponseEntity.ok(lista);
     }
 
-    // Crear un nuevo tipo de género
+    // Crear un nuevo tipo de género (solo ADMIN)
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoGenero> createTipoGenero(@RequestBody TipoGenero tipoGenero) {
         TipoGenero saved = tipoGeneroRepository.save(tipoGenero);
         return ResponseEntity.ok(saved);
     }
 
-    // Obtener tipo de género por ID
+    // Obtener tipo de género por ID (solo ADMIN)
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoGenero> getTipoGeneroById(@PathVariable Long id) {
         TipoGenero genero = tipoGeneroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));
         return ResponseEntity.ok(genero);
     }
 
-    // Actualizar tipo de género
+    // Actualizar tipo de género (solo ADMIN)
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoGenero> updateTipoGenero(@PathVariable Long id, @RequestBody TipoGenero generoDetails) {
         TipoGenero genero = tipoGeneroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));
@@ -58,8 +63,9 @@ public class TipoGeneroController {
         return ResponseEntity.ok(updated);
     }
 
-    // Eliminar tipo de género
+    // Eliminar tipo de género (solo ADMIN)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Boolean>> deleteTipoGenero(@PathVariable Long id) {
         TipoGenero genero = tipoGeneroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no existe con ID: " + id));

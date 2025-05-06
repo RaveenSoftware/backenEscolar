@@ -5,6 +5,7 @@ import co.edu.udes.backend.services.MatriculaAcademicaService;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,26 +20,30 @@ public class MatriculaAcademicaController {
     @Autowired
     private MatriculaAcademicaService matriculaService;
 
-    // Crear nueva matrícula
+    // ADMIN o ESTUDIANTE puede registrar matrícula
+    @PreAuthorize("hasAnyRole('ADMIN', 'ESTUDIANTE')")
     @PostMapping
     public ResponseEntity<MatriculaAcademica> crearMatricula(@RequestBody MatriculaAcademica matricula) {
         MatriculaAcademica nueva = matriculaService.registrarMatricula(matricula);
         return ResponseEntity.ok(nueva);
     }
 
-    // Listar todas las matrículas
+    // Solo ADMIN puede ver todas las matrículas
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<MatriculaAcademica>> listarTodas() {
         return ResponseEntity.ok(matriculaService.obtenerTodas());
     }
 
-    // Obtener una matrícula por ID
+    // ADMIN y ESTUDIANTE pueden consultar (validar en service si el estudiante consulta solo la suya)
+    @PreAuthorize("hasAnyRole('ADMIN', 'ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<MatriculaAcademica> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(matriculaService.obtenerPorId(id));
     }
 
-    // Actualizar matrícula
+    // Solo ADMIN puede actualizar una matrícula académica
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<MatriculaAcademica> actualizarMatricula(
             @PathVariable Long id,
@@ -48,7 +53,8 @@ public class MatriculaAcademicaController {
         return ResponseEntity.ok(actualizada);
     }
 
-    // Eliminar matrícula
+    // Solo ADMIN puede eliminar matrícula
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> eliminar(@PathVariable Long id) {
         matriculaService.eliminarMatricula(id);
@@ -57,7 +63,8 @@ public class MatriculaAcademicaController {
         return ResponseEntity.ok(response);
     }
 
-    //  Inscribir un curso a una matrícula
+    // ADMIN o ESTUDIANTE puede inscribir curso a su matrícula
+    @PreAuthorize("hasAnyRole('ADMIN', 'ESTUDIANTE')")
     @PostMapping("/{matriculaId}/cursos/{cursoId}")
     public ResponseEntity<?> inscribirCurso(
             @PathVariable Long matriculaId,
@@ -71,7 +78,8 @@ public class MatriculaAcademicaController {
         }
     }
 
-    //  Cancelar (eliminar) un curso de una matrícula
+    // ADMIN o ESTUDIANTE puede cancelar curso (se puede validar en service si es suyo)
+    @PreAuthorize("hasAnyRole('ADMIN', 'ESTUDIANTE')")
     @DeleteMapping("/{matriculaId}/cursos/{cursoId}")
     public ResponseEntity<?> eliminarCurso(
             @PathVariable Long matriculaId,

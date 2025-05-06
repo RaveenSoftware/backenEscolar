@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.AsignaturaRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,21 +24,22 @@ public class AsignaturaController {
         this.asignaturaRepository = asignaturaRepository;
     }
 
-    // Obtener todas las asignaturas
+    // Obtener todas las asignaturas (público autenticado)
     @GetMapping
     public ResponseEntity<List<Asignatura>> getAllAsignaturas() {
         List<Asignatura> asignaturas = asignaturaRepository.findAll();
         return ResponseEntity.ok(asignaturas);
     }
 
-    // Crear una nueva asignatura
+    // Crear una nueva asignatura - solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Asignatura> createAsignatura(@RequestBody Asignatura asignatura) {
         Asignatura savedAsignatura = asignaturaRepository.save(asignatura);
         return ResponseEntity.ok(savedAsignatura);
     }
 
-    // Obtener asignatura por ID
+    // Obtener asignatura por ID (público autenticado)
     @GetMapping("/{id}")
     public ResponseEntity<Asignatura> getAsignaturaById(@PathVariable Long id) {
         Asignatura asignatura = asignaturaRepository.findById(id)
@@ -45,7 +47,8 @@ public class AsignaturaController {
         return ResponseEntity.ok(asignatura);
     }
 
-    // Actualizar asignatura existente
+    // Actualizar asignatura existente - solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Asignatura> updateAsignatura(@PathVariable Long id, @RequestBody Asignatura asignaturaDetails) {
         Asignatura asignatura = asignaturaRepository.findById(id)
@@ -61,7 +64,8 @@ public class AsignaturaController {
         return ResponseEntity.ok(updatedAsignatura);
     }
 
-    // Eliminar asignatura
+    // Eliminar asignatura - solo ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAsignatura(@PathVariable Long id) {
         Asignatura asignatura = asignaturaRepository.findById(id)

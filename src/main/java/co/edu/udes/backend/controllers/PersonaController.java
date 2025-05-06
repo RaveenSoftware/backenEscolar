@@ -5,6 +5,7 @@ import co.edu.udes.backend.repositories.PersonaRepository;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,30 +24,34 @@ public class PersonaController {
         this.personaRepository = personaRepository;
     }
 
-    // Obtener todas las personas
+    // Solo ADMIN puede ver todas las personas
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Persona>> getAllPersonas() {
         List<Persona> personas = personaRepository.findAll();
         return ResponseEntity.ok(personas);
     }
 
-    // Crear una nueva persona
+    // Solo ADMIN puede crear personas
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
         Persona savedPersona = personaRepository.save(persona);
         return ResponseEntity.ok(savedPersona);
     }
 
-    // Obtener persona por ID
+    // Solo ADMIN puede consultar persona por ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Persona> getPersonaById(@PathVariable Long id) {
         Persona persona = personaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
         return ResponseEntity.ok(persona);
     }
 
-    // Actualizar persona existente
+    // Solo ADMIN puede actualizar
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Persona> updatePersona(@PathVariable Long id, @RequestBody Persona personaDetails) {
         Persona persona = personaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
@@ -62,8 +67,9 @@ public class PersonaController {
         return ResponseEntity.ok(updatedPersona);
     }
 
-    // Eliminar persona
+    // Solo ADMIN puede eliminar
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Boolean>> deletePersona(@PathVariable Long id) {
         Persona persona = personaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Persona no existe con ID: " + id));
