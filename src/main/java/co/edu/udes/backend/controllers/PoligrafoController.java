@@ -1,77 +1,48 @@
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Poligrafo;
-import co.edu.udes.backend.repositories.PoligrafoRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.dto.PoligrafoDTO;
+import co.edu.udes.backend.services.PoligrafoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/poligrafos")
 @CrossOrigin(origins = "*")
 public class PoligrafoController {
 
-    private final PoligrafoRepository poligrafoRepository;
-
     @Autowired
-    public PoligrafoController(PoligrafoRepository poligrafoRepository) {
-        this.poligrafoRepository = poligrafoRepository;
-    }
+    private PoligrafoService poligrafoService;
 
-    // Obtener todos los registros de polígrafos
     @GetMapping
-    public ResponseEntity<List<Poligrafo>> getAllPoligrafos() {
-        List<Poligrafo> poligrafos = poligrafoRepository.findAll();
-        return ResponseEntity.ok(poligrafos);
+    public ResponseEntity<List<PoligrafoDTO>> getAllPoligrafos() {
+        return ResponseEntity.ok(poligrafoService.obtenerTodos());
     }
 
-    // Crear un nuevo poligrafo
     @PostMapping
-    public ResponseEntity<Poligrafo> createPoligrafo(@RequestBody Poligrafo poligrafo) {
-        Poligrafo saved = poligrafoRepository.save(poligrafo);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<PoligrafoDTO> createPoligrafo(@RequestBody PoligrafoDTO poligrafoDTO) {
+        return ResponseEntity.ok(poligrafoService.crearPoligrafo(poligrafoDTO));
     }
 
-    // Obtener un poligrafo por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Poligrafo> getPoligrafoById(@PathVariable Long id) {
-        Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
-        return ResponseEntity.ok(poligrafo);
+    public ResponseEntity<PoligrafoDTO> getPoligrafoById(@PathVariable Long id) {
+        return ResponseEntity.ok(poligrafoService.obtenerPorId(id));
     }
 
-    // Actualizar un poligrafo existente
     @PutMapping("/{id}")
-    public ResponseEntity<Poligrafo> updatePoligrafo(@PathVariable Long id, @RequestBody Poligrafo poligrafoDetails) {
-        Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
-
-        poligrafo.setEstudiante(poligrafoDetails.getEstudiante());
-        poligrafo.setAsignatura(poligrafoDetails.getAsignatura());
-        poligrafo.setCalificaciones(poligrafoDetails.getCalificaciones());
-        poligrafo.setFechaEmision(poligrafoDetails.getFechaEmision());
-        poligrafo.setSemestreAcademico(poligrafoDetails.getSemestreAcademico());
-        poligrafo.setCreditosMatriculados(poligrafoDetails.getCreditosMatriculados());
-        poligrafo.setPromedio(poligrafoDetails.getPromedio());
-        poligrafo.setCreditosAcumulados(poligrafoDetails.getCreditosAcumulados());
-        poligrafo.setPromedioAcumulado(poligrafoDetails.getPromedioAcumulado());
-
-        Poligrafo updated = poligrafoRepository.save(poligrafo);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<PoligrafoDTO> updatePoligrafo(
+            @PathVariable Long id,
+            @RequestBody PoligrafoDTO poligrafoDTO) {
+        return ResponseEntity.ok(poligrafoService.actualizarPoligrafo(id, poligrafoDTO));
     }
 
-    // Eliminar un poligrafo
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deletePoligrafo(@PathVariable Long id) {
-        Poligrafo poligrafo = poligrafoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Polígrafo no existe con ID: " + id));
-
-        poligrafoRepository.delete(poligrafo);
+        poligrafoService.eliminarPoligrafo(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);

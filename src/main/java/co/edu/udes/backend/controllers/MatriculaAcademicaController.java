@@ -1,8 +1,7 @@
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.MatriculaAcademica;
+import co.edu.udes.backend.dto.MatriculaAcademicaDTO;
 import co.edu.udes.backend.services.MatriculaAcademicaService;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,69 +18,47 @@ public class MatriculaAcademicaController {
     @Autowired
     private MatriculaAcademicaService matriculaService;
 
-    // Crear nueva matrícula
-    @PostMapping
-    public ResponseEntity<MatriculaAcademica> crearMatricula(@RequestBody MatriculaAcademica matricula) {
-        MatriculaAcademica nueva = matriculaService.registrarMatricula(matricula);
-        return ResponseEntity.ok(nueva);
-    }
-
-    // Listar todas las matrículas
     @GetMapping
-    public ResponseEntity<List<MatriculaAcademica>> listarTodas() {
+    public ResponseEntity<List<MatriculaAcademicaDTO>> getAllMatriculas() {
         return ResponseEntity.ok(matriculaService.obtenerTodas());
     }
 
-    // Obtener una matrícula por ID
+    @PostMapping
+    public ResponseEntity<MatriculaAcademicaDTO> createMatricula(@RequestBody MatriculaAcademicaDTO matriculaDTO) {
+        return ResponseEntity.ok(matriculaService.registrarMatricula(matriculaDTO));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<MatriculaAcademica> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<MatriculaAcademicaDTO> getMatriculaById(@PathVariable Long id) {
         return ResponseEntity.ok(matriculaService.obtenerPorId(id));
     }
 
-    // Actualizar matrícula
     @PutMapping("/{id}")
-    public ResponseEntity<MatriculaAcademica> actualizarMatricula(
+    public ResponseEntity<MatriculaAcademicaDTO> updateMatricula(
             @PathVariable Long id,
-            @RequestBody MatriculaAcademica detalles
-    ) {
-        MatriculaAcademica actualizada = matriculaService.actualizarMatricula(id, detalles);
-        return ResponseEntity.ok(actualizada);
+            @RequestBody MatriculaAcademicaDTO matriculaDTO) {
+        return ResponseEntity.ok(matriculaService.actualizarMatricula(id, matriculaDTO));
     }
 
-    // Eliminar matrícula
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Boolean>> deleteMatricula(@PathVariable Long id) {
         matriculaService.eliminarMatricula(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 
-    //  Inscribir un curso a una matrícula
     @PostMapping("/{matriculaId}/cursos/{cursoId}")
-    public ResponseEntity<?> inscribirCurso(
+    public ResponseEntity<MatriculaAcademicaDTO> inscribirCurso(
             @PathVariable Long matriculaId,
-            @PathVariable Long cursoId
-    ) {
-        try {
-            MatriculaAcademica actualizada = matriculaService.inscribirCurso(matriculaId, cursoId);
-            return ResponseEntity.ok(actualizada);
-        } catch (IllegalStateException | ResourceNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            @PathVariable Long cursoId) {
+        return ResponseEntity.ok(matriculaService.inscribirCurso(matriculaId, cursoId));
     }
 
-    //  Cancelar (eliminar) un curso de una matrícula
     @DeleteMapping("/{matriculaId}/cursos/{cursoId}")
-    public ResponseEntity<?> eliminarCurso(
+    public ResponseEntity<MatriculaAcademicaDTO> eliminarCurso(
             @PathVariable Long matriculaId,
-            @PathVariable Long cursoId
-    ) {
-        try {
-            MatriculaAcademica actualizada = matriculaService.eliminarCursoDeMatricula(matriculaId, cursoId);
-            return ResponseEntity.ok(actualizada);
-        } catch (IllegalStateException | ResourceNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            @PathVariable Long cursoId) {
+        return ResponseEntity.ok(matriculaService.eliminarCursoDeMatricula(matriculaId, cursoId));
     }
 }
