@@ -1,73 +1,48 @@
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Asignatura;
-import co.edu.udes.backend.repositories.AsignaturaRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.dto.AsignaturaDTO;
+import co.edu.udes.backend.services.AsignaturaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/asignaturas")
 @CrossOrigin(origins = "*")
 public class AsignaturaController {
 
-    private final AsignaturaRepository asignaturaRepository;
-
     @Autowired
-    public AsignaturaController(AsignaturaRepository asignaturaRepository) {
-        this.asignaturaRepository = asignaturaRepository;
-    }
+    private AsignaturaService asignaturaService;
 
-    // Obtener todas las asignaturas
     @GetMapping
-    public ResponseEntity<List<Asignatura>> getAllAsignaturas() {
-        List<Asignatura> asignaturas = asignaturaRepository.findAll();
-        return ResponseEntity.ok(asignaturas);
+    public ResponseEntity<List<AsignaturaDTO>> getAllAsignaturas() {
+        return ResponseEntity.ok(asignaturaService.obtenerTodas());
     }
 
-    // Crear una nueva asignatura
     @PostMapping
-    public ResponseEntity<Asignatura> createAsignatura(@RequestBody Asignatura asignatura) {
-        Asignatura savedAsignatura = asignaturaRepository.save(asignatura);
-        return ResponseEntity.ok(savedAsignatura);
+    public ResponseEntity<AsignaturaDTO> createAsignatura(@RequestBody AsignaturaDTO asignaturaDTO) {
+        return ResponseEntity.ok(asignaturaService.crearAsignatura(asignaturaDTO));
     }
 
-    // Obtener asignatura por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Asignatura> getAsignaturaById(@PathVariable Long id) {
-        Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
-        return ResponseEntity.ok(asignatura);
+    public ResponseEntity<AsignaturaDTO> getAsignaturaById(@PathVariable Long id) {
+        return ResponseEntity.ok(asignaturaService.obtenerPorId(id));
     }
 
-    // Actualizar asignatura existente
     @PutMapping("/{id}")
-    public ResponseEntity<Asignatura> updateAsignatura(@PathVariable Long id, @RequestBody Asignatura asignaturaDetails) {
-        Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
-
-        asignatura.setCodigo(asignaturaDetails.getCodigo());
-        asignatura.setNombre(asignaturaDetails.getNombre());
-        asignatura.setPredecesora(asignaturaDetails.getPredecesora());
-        asignatura.setNumeroSemestre(asignaturaDetails.getNumeroSemestre());
-        asignatura.setNumeroCreditos(asignaturaDetails.getNumeroCreditos());
-
-        Asignatura updatedAsignatura = asignaturaRepository.save(asignatura);
-        return ResponseEntity.ok(updatedAsignatura);
+    public ResponseEntity<AsignaturaDTO> updateAsignatura(
+            @PathVariable Long id,
+            @RequestBody AsignaturaDTO asignaturaDTO) {
+        return ResponseEntity.ok(asignaturaService.actualizarAsignatura(id, asignaturaDTO));
     }
 
-    // Eliminar asignatura
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteAsignatura(@PathVariable Long id) {
-        Asignatura asignatura = asignaturaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asignatura no existe con ID: " + id));
-
-        asignaturaRepository.delete(asignatura);
+        asignaturaService.eliminarAsignatura(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
