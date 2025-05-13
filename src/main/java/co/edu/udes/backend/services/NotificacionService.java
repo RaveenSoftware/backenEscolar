@@ -1,5 +1,7 @@
 package co.edu.udes.backend.services;
 
+import co.edu.udes.backend.dto.NotificacionDTO;
+import co.edu.udes.backend.mappers.NotificacionMapper;
 import co.edu.udes.backend.models.Notificacion;
 import co.edu.udes.backend.repositories.NotificacionRepository;
 import jakarta.mail.MessagingException;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificacionService {
@@ -21,29 +24,31 @@ public class NotificacionService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public Notificacion enviarNotificacion(String destinatario, String asunto, String mensaje) {
-        Notificacion notificacion = new Notificacion();
-        notificacion.setDestinatario(destinatario);
-        notificacion.setAsunto(asunto);
-        notificacion.setMensaje(mensaje);
+    @Autowired
+    private NotificacionMapper notificacionMapper;
+
+    public NotificacionDTO enviarNotificacion(NotificacionDTO notificacionDTO) {
+        Notificacion notificacion = notificacionMapper.toEntity(notificacionDTO);
         notificacion.setFechaEnvio(LocalDateTime.now());
 
         try {
             MimeMessage correo = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(correo, true);
-            helper.setTo(destinatario);
-            helper.setSubject(asunto);
-            helper.setText(mensaje, true); // permite HTML
+            helper.setTo(notificacion.getDestinatario());
+            helper.setSubject(notificacion.getAsunto());
+            helper.setText(notificacion.getMensaje(), true);
             mailSender.send(correo);
             notificacion.setEnviado(true);
         } catch (MessagingException e) {
             notificacion.setEnviado(false);
         }
 
-        return notificacionRepository.save(notificacion);
+        return notificacionMapper.toDTO(notificacionRepository.save(notificacion));
     }
 
-    public List<Notificacion> obtenerTodas() {
-        return notificacionRepository.findAll();
+    public List<NotificacionDTO> obtenerTodas() {
+        return notificacionRepository.findAll().stream()
+            .map(notificacionMapper::toDTO)
+            .collect(Collectors.toList());
     }
 }

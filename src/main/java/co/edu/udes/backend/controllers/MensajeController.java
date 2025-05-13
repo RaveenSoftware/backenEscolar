@@ -1,50 +1,48 @@
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Mensaje;
+import co.edu.udes.backend.dto.MensajeDTO;
 import co.edu.udes.backend.services.MensajeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/mensajes")
+@RequestMapping("/api/v1/mensajes")
 @CrossOrigin(origins = "*")
 public class MensajeController {
 
     @Autowired
     private MensajeService mensajeService;
 
-    // Enviar mensaje
     @PostMapping
-    public ResponseEntity<Mensaje> enviarMensaje(@RequestBody Mensaje mensaje) {
-        return ResponseEntity.ok(mensajeService.enviarMensaje(mensaje));
+    public ResponseEntity<MensajeDTO> enviarMensaje(@RequestBody MensajeDTO mensajeDTO) {
+        return ResponseEntity.ok(mensajeService.enviarMensaje(mensajeDTO));
     }
 
-    // Obtener mensajes recibidos
     @GetMapping("/recibidos/{usuarioId}")
-    public ResponseEntity<List<Mensaje>> obtenerRecibidos(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<MensajeDTO>> obtenerRecibidos(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(mensajeService.obtenerRecibidos(usuarioId));
     }
 
-    // Obtener mensajes enviados
     @GetMapping("/enviados/{usuarioId}")
-    public ResponseEntity<List<Mensaje>> obtenerEnviados(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<MensajeDTO>> obtenerEnviados(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(mensajeService.obtenerEnviados(usuarioId));
     }
 
-    // Marcar como leído
     @PutMapping("/{id}/leido")
-    public ResponseEntity<Mensaje> marcarComoLeido(@PathVariable Long id) {
+    public ResponseEntity<MensajeDTO> marcarComoLeido(@PathVariable Long id) {
         return ResponseEntity.ok(mensajeService.marcarComoLeido(id));
     }
 
-    // Eliminar mensaje (opcional)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarMensaje(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Boolean>> eliminarMensaje(@PathVariable Long id) {
         mensajeService.eliminarMensaje(id);
-        return ResponseEntity.ok().build();
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return ResponseEntity.ok(response);
     }
 }
