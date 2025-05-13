@@ -1,14 +1,15 @@
+```java
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Curso;
-import co.edu.udes.backend.repositories.CursoRepository;
-import co.edu.udes.backend.repositories.CursoRepository;
-import co.edu.udes.backend.utils.ResourceNotFoundException;
+import co.edu.udes.backend.dto.CursoDTO;
+import co.edu.udes.backend.services.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/cursos")
@@ -16,65 +17,36 @@ import java.util.*;
 public class CursoController {
 
     @Autowired
-    private CursoRepository cursoRepository;
+    private CursoService cursoService;
 
-    // Obtener todos los cursos
     @GetMapping
-    public ResponseEntity<List<Curso>> getAllCursos() {
-        List<Curso> cursos = cursoRepository.findAll();
-        return ResponseEntity.ok(cursos);
+    public ResponseEntity<List<CursoDTO>> getAllCursos() {
+        return ResponseEntity.ok(cursoService.obtenerTodos());
     }
 
-    // Obtener curso por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Curso> getCursoById(@PathVariable Long id) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado con ID: " + id));
-        return ResponseEntity.ok(curso);
-    }
-
-    // Crear nuevo curso
     @PostMapping
-    public ResponseEntity<Curso> createCurso(@RequestBody Curso curso) {
-        if (curso.getInscritosActuales() == 0) {
-            curso.setInscritosActuales(0); // Inicializa en cero si no está definido
-        }
-        Curso nuevo = cursoRepository.save(curso);
-        return ResponseEntity.ok(nuevo);
+    public ResponseEntity<CursoDTO> createCurso(@RequestBody CursoDTO cursoDTO) {
+        return ResponseEntity.ok(cursoService.crearCurso(cursoDTO));
     }
 
-    // Actualizar curso
+    @GetMapping("/{id}")
+    public ResponseEntity<CursoDTO> getCursoById(@PathVariable Long id) {
+        return ResponseEntity.ok(cursoService.obtenerPorId(id));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Curso> updateCurso(@PathVariable Long id, @RequestBody Curso detalles) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado con ID: " + id));
-
-        curso.setNombre(detalles.getNombre());
-        curso.setCodigo(detalles.getCodigo());
-        curso.setCreditos(detalles.getCreditos());
-        curso.setContenido(detalles.getContenido());
-        curso.setObjetivos(detalles.getObjetivos());
-        curso.setCompetencias(detalles.getCompetencias());
-        curso.setPrograma(detalles.getPrograma());
-        curso.setAsignatura(detalles.getAsignatura());
-        curso.setHorario(detalles.getHorario());
-        curso.setDocentes(detalles.getDocentes());
-        curso.setCupoMaximo(detalles.getCupoMaximo());
-        curso.setPrerrequisitos(detalles.getPrerrequisitos());
-
-        Curso actualizado = cursoRepository.save(curso);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<CursoDTO> updateCurso(
+            @PathVariable Long id,
+            @RequestBody CursoDTO cursoDTO) {
+        return ResponseEntity.ok(cursoService.actualizarCurso(id, cursoDTO));
     }
 
-    // Eliminar curso
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteCurso(@PathVariable Long id) {
-        Curso curso = cursoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado con ID: " + id));
-
-        cursoRepository.delete(curso);
+        cursoService.eliminarCurso(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
+```

@@ -1,6 +1,7 @@
+```java
 package co.edu.udes.backend.controllers;
 
-import co.edu.udes.backend.models.Docente;
+import co.edu.udes.backend.dto.DocenteDTO;
 import co.edu.udes.backend.services.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,38 +19,34 @@ public class DocenteController {
     @Autowired
     private DocenteService docenteService;
 
-    // Crear docente
-    @PostMapping
-    public ResponseEntity<Docente> crearDocente(@RequestBody Docente docente) {
-        Docente nuevo = docenteService.crearDocente(docente);
-        return ResponseEntity.ok(nuevo);
-    }
-
-    // Obtener todos los docentes
     @GetMapping
-    public ResponseEntity<List<Docente>> obtenerTodos() {
+    public ResponseEntity<List<DocenteDTO>> getAllDocentes() {
         return ResponseEntity.ok(docenteService.obtenerTodos());
     }
 
-    // Obtener docente por ID
+    @PostMapping
+    public ResponseEntity<DocenteDTO> createDocente(@RequestBody DocenteDTO docenteDTO) {
+        return ResponseEntity.ok(docenteService.crearDocente(docenteDTO));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Docente> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<DocenteDTO> getDocenteById(@PathVariable Long id) {
         return ResponseEntity.ok(docenteService.obtenerPorId(id));
     }
 
-    // Actualizar docente
     @PutMapping("/{id}")
-    public ResponseEntity<Docente> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
-        Docente actualizado = docenteService.actualizarDocente(id, docente);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<DocenteDTO> updateDocente(
+            @PathVariable Long id,
+            @RequestBody DocenteDTO docenteDTO) {
+        return ResponseEntity.ok(docenteService.actualizarDocente(id, docenteDTO));
     }
 
-    // Eliminar docente
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Boolean>> eliminarDocente(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Boolean>> deleteDocente(@PathVariable Long id) {
         docenteService.eliminarDocente(id);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return ResponseEntity.ok(response);
     }
 }
+```

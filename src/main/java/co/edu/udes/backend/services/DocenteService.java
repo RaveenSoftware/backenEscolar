@@ -1,12 +1,16 @@
+```java
 package co.edu.udes.backend.services;
 
+import co.edu.udes.backend.dto.DocenteDTO;
+import co.edu.udes.backend.mappers.DocenteMapper;
 import co.edu.udes.backend.models.Docente;
-import co.edu.udes.backend.repositories.DocenteRepository;
+import co.edu.udes.backend.repositories.*;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DocenteService {
@@ -14,39 +18,80 @@ public class DocenteService {
     @Autowired
     private DocenteRepository docenteRepository;
 
-    // Crear nuevo docente
-    public Docente crearDocente(Docente docente) {
-        return docenteRepository.save(docente);
+    @Autowired
+    private FacultadRepository facultadRepository;
+
+    @Autowired
+    private TipoDocumentoRepository tipoDocumentoRepository;
+
+    @Autowired
+    private TipoGeneroRepository tipoGeneroRepository;
+
+    @Autowired
+    private DocenteMapper docenteMapper;
+
+    public DocenteDTO crearDocente(DocenteDTO docenteDTO) {
+        Docente docente = docenteMapper.toEntity(docenteDTO);
+        
+        if (docenteDTO.getFacultadId() != null) {
+            docente.setFacultad(facultadRepository.findById(docenteDTO.getFacultadId())
+                .orElseThrow(() -> new ResourceNotFoundException("Facultad no encontrada")));
+        }
+        
+        if (docenteDTO.getTipoDocumentoId() != null) {
+            docente.setTipoDocumento(tipoDocumentoRepository.findById(docenteDTO.getTipoDocumentoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no encontrado")));
+        }
+        
+        if (docenteDTO.getTipoGeneroId() != null) {
+            docente.setGenero(tipoGeneroRepository.findById(docenteDTO.getTipoGeneroId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no encontrado")));
+        }
+
+        return docenteMapper.toDTO(docenteRepository.save(docente));
     }
 
-    // Obtener todos los docentes
-    public List<Docente> obtenerTodos() {
-        return docenteRepository.findAll();
+    public List<DocenteDTO> obtenerTodos() {
+        return docenteRepository.findAll().stream()
+            .map(docenteMapper::toDTO)
+            .collect(Collectors.toList());
     }
 
-    // Obtener docente por ID
-    public Docente obtenerPorId(Long id) {
-        return docenteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Docente no encontrado con ID: " + id));
+    public DocenteDTO obtenerPorId(Long id) {
+        return docenteMapper.toDTO(docenteRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Docente no encontrado")));
     }
 
-    // Actualizar docente
-    public Docente actualizarDocente(Long id, Docente docenteDetails) {
-        Docente docente = obtenerPorId(id);
+    public DocenteDTO actualizarDocente(Long id, DocenteDTO docenteDTO) {
+        Docente existente = docenteRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Docente no encontrado"));
 
-        docente.setNombre(docenteDetails.getNombre());
-        docente.setCorreoPersonal(docenteDetails.getCorreoPersonal());
-        docente.setTelefono(docenteDetails.getTelefono());
-        docente.setNumeroDocumento(docenteDetails.getNumeroDocumento());
-        docente.setEstado(docenteDetails.isEstado());
-        docente.setEspecialidad(docenteDetails.getEspecialidad());
+        Docente actualizado = docenteMapper.toEntity(docenteDTO);
+        actualizado.setId(existente.getId());
+        
+        if (docenteDTO.getFacultadId() != null) {
+            actualizado.setFacultad(facultadRepository.findById(docenteDTO.getFacultadId())
+                .orElseThrow(() -> new ResourceNotFoundException("Facultad no encontrada")));
+        }
 
-        return docenteRepository.save(docente);
+        if (docenteDTO.getTipoDocumentoId() != null) {
+            actualizado.setTipoDocumento(tipoDocumentoRepository.findById(docenteDTO.getTipoDocumentoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de documento no encontrado")));
+        }
+
+        if (docenteDTO.getTipoGeneroId() != null) {
+            actualizado.setGenero(tipoGeneroRepository.findById(docenteDTO.getTipoGeneroId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de género no encontrado")));
+        }
+
+        return docenteMapper.toDTO(docenteRepository.save(actualizado));
     }
 
-    // Eliminar docente
     public void eliminarDocente(Long id) {
-        Docente docente = obtenerPorId(id);
-        docenteRepository.delete(docente);
+        if (!docenteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Docente no encontrado");
+        }
+        docenteRepository.deleteById(id);
     }
 }
+```
