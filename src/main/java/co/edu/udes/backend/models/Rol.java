@@ -2,33 +2,27 @@ package co.edu.udes.backend.models;
 
 import jakarta.persistence.*;
 
-@Entity(name = "tipos_documentos")
-public class TipoDocumento {
+@Entity
+@Table(name = "roles")
+public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String nombre;
 
-    @Column(name = "estado", nullable = false)
+    @Column(nullable = false)
     private boolean estado;
 
-    public TipoDocumento() {
-        // Constructor por defecto requerido por JPA
-    }
+    // Getters y Setters
 
-    public TipoDocumento(String nombre, boolean estado) {
-        this.nombre = nombre;
-        this.estado = estado;
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

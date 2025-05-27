@@ -37,13 +37,17 @@ public class Persona {
     @JoinColumn(name = "tipo_genero_id", nullable = false)
     private TipoGenero genero;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rol_id", nullable = false)
+    private Rol rol; // 👈 NUEVA RELACIÓN
+
     public Persona() {
         // Constructor por defecto requerido por JPA
     }
 
     public Persona(String nombre, String telefono, String correoPersonal,
                    LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
-                   TipoDocumento tipoDocumento, TipoGenero genero) {
+                   TipoDocumento tipoDocumento, TipoGenero genero, Rol rol) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.correoPersonal = correoPersonal;
@@ -52,7 +56,10 @@ public class Persona {
         this.estado = estado;
         this.tipoDocumento = tipoDocumento;
         this.genero = genero;
+        this.rol = rol;
     }
+
+    // Getters y setters
 
     public long getId() {
         return id;
@@ -124,5 +131,13 @@ public class Persona {
 
     public void setGenero(TipoGenero genero) {
         this.genero = genero;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
 }

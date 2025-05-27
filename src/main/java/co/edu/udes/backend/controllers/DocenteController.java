@@ -2,13 +2,12 @@ package co.edu.udes.backend.controllers;
 
 import co.edu.udes.backend.models.Docente;
 import co.edu.udes.backend.services.DocenteService;
+import co.edu.udes.backend.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/docentes")
@@ -18,11 +17,14 @@ public class DocenteController {
     @Autowired
     private DocenteService docenteService;
 
-    // Crear docente
+    // Crear nuevo docente
     @PostMapping
-    public ResponseEntity<Docente> crearDocente(@RequestBody Docente docente) {
-        Docente nuevo = docenteService.crearDocente(docente);
-        return ResponseEntity.ok(nuevo);
+    public ResponseEntity<?> crearDocente(@RequestBody Docente docente) {
+        try {
+            return ResponseEntity.ok(docenteService.crearDocente(docente));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Obtener todos los docentes
@@ -39,9 +41,12 @@ public class DocenteController {
 
     // Actualizar docente
     @PutMapping("/{id}")
-    public ResponseEntity<Docente> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
-        Docente actualizado = docenteService.actualizarDocente(id, docente);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<?> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
+        try {
+            return ResponseEntity.ok(docenteService.actualizarDocente(id, docente));
+        } catch (ResourceNotFoundException | IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Eliminar docente

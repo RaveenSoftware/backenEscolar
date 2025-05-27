@@ -1,5 +1,6 @@
 package co.edu.udes.backend.controllers;
 
+import co.edu.udes.backend.dtos.EstudianteDTO;
 import co.edu.udes.backend.models.Estudiante;
 import co.edu.udes.backend.services.EstudianteService;
 import co.edu.udes.backend.utils.ResourceNotFoundException;
@@ -17,34 +18,42 @@ public class EstudianteController {
     @Autowired
     private EstudianteService estudianteService;
 
+    // Obtener todos los estudiantes (DTOs)
     @GetMapping
-    public ResponseEntity<List<Estudiante>> getAllEstudiantes() {
-        return ResponseEntity.ok(estudianteService.obtenerTodos());
+    public ResponseEntity<List<EstudianteDTO>> getAllEstudiantes() {
+        return ResponseEntity.ok(estudianteService.obtenerTodosDTOs());
     }
 
+    // Crear estudiante usando DTO
     @PostMapping
-    public ResponseEntity<?> createEstudiante(@RequestBody Estudiante estudiante) {
+    public ResponseEntity<?> createEstudiante(@RequestBody EstudianteDTO dto) {
         try {
-            return ResponseEntity.ok(estudianteService.registrarEstudiante(estudiante));
+            Estudiante creado = estudianteService.registrarEstudianteDesdeDTO(dto);
+            return ResponseEntity.ok(estudianteService.convertirADTO(creado));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
+    // Obtener estudiante por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Estudiante> getEstudianteById(@PathVariable Long id) {
-        return ResponseEntity.ok(estudianteService.obtenerPorId(id));
+    public ResponseEntity<EstudianteDTO> getEstudianteById(@PathVariable Long id) {
+        Estudiante estudiante = estudianteService.obtenerPorId(id);
+        return ResponseEntity.ok(estudianteService.convertirADTO(estudiante));
     }
 
+    // Actualizar estudiante (se mantiene con entidad completa para facilitar validaciones)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEstudiante(@PathVariable Long id, @RequestBody Estudiante estudianteDetails) {
         try {
-            return ResponseEntity.ok(estudianteService.actualizarEstudiante(id, estudianteDetails));
+            Estudiante actualizado = estudianteService.actualizarEstudiante(id, estudianteDetails);
+            return ResponseEntity.ok(estudianteService.convertirADTO(actualizado));
         } catch (ResourceNotFoundException | IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
+    // Eliminar estudiante
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteEstudiante(@PathVariable Long id) {
         estudianteService.eliminarEstudiante(id);

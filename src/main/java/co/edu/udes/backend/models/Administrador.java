@@ -6,7 +6,7 @@ import java.time.LocalDate;
 @Entity(name = "administradores")
 public class Administrador extends Persona {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // 👈 Corrección aplicada aquí
     @JoinColumn(name = "facultad_id", nullable = false)
     private Facultad facultad;
 
@@ -22,9 +22,9 @@ public class Administrador extends Persona {
 
     public Administrador(String nombre, String telefono, String correoPersonal,
                          LocalDate fechaNacimiento, String numeroDocumento, boolean estado,
-                         TipoDocumento tipoDocumento, TipoGenero genero,
+                         TipoDocumento tipoDocumento, TipoGenero genero, Rol rol,
                          Facultad facultad, String codigoInstitucional, String correoInstitucional) {
-        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero);
+        super(nombre, telefono, correoPersonal, fechaNacimiento, numeroDocumento, estado, tipoDocumento, genero, rol);
         this.facultad = facultad;
         this.codigoInstitucional = codigoInstitucional;
         this.correoInstitucional = correoInstitucional;

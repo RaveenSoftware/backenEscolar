@@ -11,4 +11,6 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Long> {
 
     // Método personalizado para validar si ya existe un número de documento
     Optional<Estudiante> findByNumeroDocumento(String numeroDocumento);
+
+
 }
